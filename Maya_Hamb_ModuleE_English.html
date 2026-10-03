@@ -447,7 +447,7 @@ body {
   <div style="text-align:right">
     <button class="active-user-pill" id="user-pill" onclick="showUserScreen()">👤 —</button>
   </div>
-  <span class="version-tag">v1.0</span>
+  <span class="version-tag">v1.4 · 2026-10-03</span>
 </div>
 
 <div class="shell">
@@ -499,7 +499,22 @@ body {
       </div>
     </div>
 
-    <div id="home-weak-section" class="card hidden">
+    <div class="card" id="notif-card" style="display:none">
+  <p class="section-label">Daily reminder</p>
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:14px;font-weight:600">Study reminder at 5–9pm</div>
+      <div style="font-size:12px;color:var(--ink3);margin-top:2px">Get a notification if you haven't practised today</div>
+    </div>
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+      <span class="toggle-track">
+        <input type="checkbox" id="reminder-toggle" onchange="toggleReminder(this.checked)" style="position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;margin:0">
+        <span style="position:absolute;top:2px;left:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform .2s;pointer-events:none"></span>
+      </span>
+    </label>
+  </div>
+</div>
+<div id="home-weak-section" class="card hidden">
       <p class="section-label">Words to review</p>
       <div id="home-weak-list"></div>
       <button class="btn mt16" onclick="switchTab('vocab'); startWeakQuiz()">Practice weak words →</button>
@@ -1192,6 +1207,21 @@ function switchTab(name) {
 // HOME
 // ═══════════════════════════════════════════════════════
 
+function toggleReminder(on) {
+  if (on) {
+    if (Notification.permission === 'granted') {
+      scheduleReminder();
+    } else {
+      Notification.requestPermission().then(p => {
+        if (p === 'granted') scheduleReminder();
+        else document.getElementById('reminder-toggle').checked = false;
+      });
+    }
+  } else {
+    try { localStorage.removeItem('moduleE_reminder'); } catch {}
+  }
+}
+
 function refreshHome() {
   const total = DB.history.length;
   $('hs-total').textContent = total;
@@ -1200,6 +1230,14 @@ function refreshHome() {
     $('home-stats').classList.remove('hidden');
     const best = Math.max(...DB.history.map(h => Math.round(h.score/h.total*100)));
     $('hs-best').textContent = best + '%';
+  }
+  // Show notification card if supported
+  if ('Notification' in window) {
+    document.getElementById('notif-card').style.display = 'block';
+    const tog = document.getElementById('reminder-toggle');
+    if (tog) {
+      try { tog.checked = localStorage.getItem('moduleE_reminder') === '1' && Notification.permission === 'granted'; } catch {}
+    }
   }
   const weak = getWeakWords().slice(0, 5);
   if (weak.length > 0) {
@@ -1662,6 +1700,7 @@ function selectUser(name) {
   document.getElementById('user-screen').style.display = 'none';
   document.getElementById('user-pill').textContent = '👤 ' + name;
   logEvent('login', 'Session started');
+  requestNotifPermission();
   refreshHome();
 }
 
@@ -1714,6 +1753,7 @@ function speak(word) {
       <div>
         <h2>Admin dashboard</h2>
         <div style="font-size:12px;opacity:.8" id="admin-last-refresh"></div>
+        <div style="font-size:11px;opacity:.6" id="admin-ver"></div>
       </div>
       <button onclick="closeAdmin()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px">✕ Close</button>
     </div>
@@ -1743,11 +1783,52 @@ function logEvent(event, detail, score, total) {
   }).catch(() => {});
 }
 
+
+// ═══════════════════════════════════════════════════════
+// PUSH NOTIFICATIONS — daily study reminder
+// ═══════════════════════════════════════════════════════
+
+function requestNotifPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
+function scheduleReminder() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  // Store reminder preference
+  try { localStorage.setItem('moduleE_reminder', '1'); } catch {}
+}
+
+function checkDailyReminder() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    const lastNotif = localStorage.getItem('moduleE_last_notif');
+    const today = new Date().toDateString();
+    if (lastNotif === today) return; // already notified today
+    const hour = new Date().getHours();
+    if (hour >= 17 && hour < 21) { // remind between 5pm-9pm
+      localStorage.setItem('moduleE_last_notif', today);
+      new Notification('📚 Time to practise English!', {
+        body: 'Maya — your Module E exam is coming up. 5 minutes now makes a difference!',
+        icon: 'https://alonham.github.io/Maya_English/favicon.ico'
+      });
+    }
+  } catch {}
+}
+
+// Check reminder every 30 minutes
+setInterval(checkDailyReminder, 30 * 60 * 1000);
+// Also check on load
+setTimeout(checkDailyReminder, 3000);
+
 // ═══════════════════════════════════════════════════════
 // ADMIN PANEL
 // ═══════════════════════════════════════════════════════
 
 // ── Change this password ──
+const APP_VERSION = 'v1.4 · 2026-10-03';
 const ADMIN_PASSWORD = 'Alon2024';
 
 let adminUnlocked = false;
@@ -1783,7 +1864,9 @@ function checkAdminPw() {
 function showAdminDash() {
   document.getElementById('admin-login').style.display = 'none';
   document.getElementById('admin-dash').style.display = 'flex';
-  document.getElementById('admin-last-refresh').textContent = 'Last updated: ' + new Date().toLocaleString();
+  document.getElementById('admin-last-refresh').textContent = 'Refreshed: ' + new Date().toLocaleString();
+  const av = document.getElementById('admin-ver');
+  if (av) av.textContent = APP_VERSION;
   renderAdminDash();
 }
 
