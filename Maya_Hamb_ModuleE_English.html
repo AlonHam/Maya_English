@@ -1823,7 +1823,8 @@ function addUser() {
   const users = getUsers();
   if (!users.includes(name)) { users.push(name); saveUsers(users); }
   input.value = '';
-  selectUser(name);
+  renderUserList();
+  requestPin(name);
 }
 
 function deleteUser(name) {
