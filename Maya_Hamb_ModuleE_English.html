@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maya Hamb — Module E English Practice</title>
+<style>
+/* ── VERSION TAG (bump this when updating) ─────────── */
+/* v1.0 — Dec 2024 */
+
+:root {
+  --ink: #1a1a2e;
+  --ink2: #3d3d5c;
+  --ink3: #7a7a99;
+  --bg: #f0eef8;
+  --surface: #ffffff;
+  --surface2: #f7f6fc;
+  --accent: #5b4fcf;
+  --accent2: #7c6fe0;
+  --accent-bg: #ede9ff;
+  --green: #1a7a4a;
+  --green-bg: #e6f4ed;
+  --red: #b02a2a;
+  --red-bg: #fdecea;
+  --amber: #7a5200;
+  --amber-bg: #fff3d6;
+  --radius: 10px;
+  --shadow: 0 2px 12px rgba(91,79,207,.10);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* ── LAYOUT ───────────────────────────────────────── */
+.shell {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 16px 60px;
+}
+
+/* ── HEADER ───────────────────────────────────────── */
+.app-header {
+  background: var(--accent);
+  color: #fff;
+  padding: 20px 24px 18px;
+  margin-bottom: 24px;
+  border-radius: 0 0 16px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.app-header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+.app-header p {
+  font-size: 13px;
+  opacity: .8;
+  margin-top: 2px;
+}
+.version-tag {
+  font-size: 11px;
+  background: rgba(255,255,255,.2);
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  margin-top: 4px;
+}
+
+/* ── TABS ─────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  background: var(--surface);
+  padding: 6px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.tab {
+  flex: 1;
+  padding: 9px 6px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink3);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: background .15s, color .15s;
+}
+.tab.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ── CARDS ────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+}
+
+/* ── PROGRESS ─────────────────────────────────────── */
+.progress-wrap { margin-bottom: 16px; }
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--ink3);
+  margin-bottom: 6px;
+}
+.progress-track {
+  height: 5px;
+  background: var(--accent-bg);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width .3s;
+}
+
+/* ── QUESTION ─────────────────────────────────────── */
+.q-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin-bottom: 8px;
+}
+.q-word {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+  letter-spacing: -0.3px;
+}
+.q-pos {
+  font-size: 12px;
+  color: var(--ink3);
+  margin-bottom: 16px;
+}
+.q-prompt {
+  font-size: 14px;
+  color: var(--ink2);
+  margin-bottom: 16px;
+}
+
+/* ── OPTIONS ──────────────────────────────────────── */
+.options { display: flex; flex-direction: column; gap: 8px; }
+.opt {
+  padding: 12px 14px;
+  border: 1.5px solid #e0ddf5;
+  border-radius: 8px;
+  background: var(--surface2);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+  text-align: left;
+  transition: border-color .12s, background .12s;
+  line-height: 1.5;
+}
+.opt:hover { border-color: var(--accent2); background: var(--accent-bg); }
+.opt.correct { background: var(--green-bg); border-color: var(--green); color: var(--green); font-weight: 500; }
+.opt.wrong { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+.opt:disabled, .opt.locked { pointer-events: none; }
+
+/* ── FEEDBACK ─────────────────────────────────────── */
+.feedback {
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-top: 12px;
+  line-height: 1.5;
+  display: none;
+}
+.feedback.correct { background: var(--green-bg); color: var(--green); }
+.feedback.wrong { background: var(--red-bg); color: var(--red); }
+.feedback.show { display: block; }
+
+/* ── BUTTONS ──────────────────────────────────────── */
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1.5px solid #d0cce8;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--accent2); background: var(--accent-bg); }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn-primary:hover { background: var(--accent2); border-color: var(--accent2); }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+
+/* ── SCORE SCREEN ─────────────────────────────────── */
+.score-screen { text-align: center; padding: 28px 16px; }
+.score-ring {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: var(--accent-bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
+.score-ring .num { font-size: 32px; font-weight: 700; color: var(--accent); line-height: 1; }
+.score-ring .den { font-size: 13px; color: var(--ink3); }
+.score-title { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+.score-sub { font-size: 14px; color: var(--ink2); margin-bottom: 20px; }
+
+/* ── STATS STRIP ──────────────────────────────────── */
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.stat-box {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 12px 8px;
+  text-align: center;
+}
+.stat-box .val { font-size: 20px; font-weight: 700; color: var(--accent); }
+.stat-box .lbl { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+
+/* ── FLASHCARD ────────────────────────────────────── */
+.flashcard {
+  min-height: 200px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  padding: 28px 20px;
+  user-select: none;
+  transition: background .15s;
+}
+.flashcard:hover { background: var(--surface2); }
+.flashcard .fc-word { font-size: 26px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.flashcard .fc-meta { font-size: 12px; color: var(--ink3); }
+.flashcard .fc-meaning {
+  font-size: 15px; color: var(--accent);
+  margin-top: 16px; line-height: 1.5;
+  padding: 10px 16px;
+  background: var(--accent-bg);
+  border-radius: 8px;
+  display: none;
+}
+.flashcard .fc-meaning.show { display: block; }
+.flashcard .fc-tap { font-size: 12px; color: var(--ink3); margin-top: 12px; }
+
+/* ── READING PASSAGE ──────────────────────────────── */
+.passage {
+  font-size: 14px;
+  line-height: 1.85;
+  color: var(--ink2);
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.passage p { margin-bottom: 12px; }
+.passage strong { color: var(--ink); }
+.passage-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+
+/* ── HOME SCREEN ──────────────────────────────────── */
+.home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.mode-card {
+  background: var(--surface);
+  border: 1.5px solid #e0ddf5;
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color .12s, box-shadow .12s;
+  text-align: center;
+}
+.mode-card:hover { border-color: var(--accent2); box-shadow: var(--shadow); }
+.mode-card .icon { font-size: 28px; margin-bottom: 8px; }
+.mode-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.mode-card p { font-size: 12px; color: var(--ink3); }
+
+/* ── HISTORY TABLE ────────────────────────────────── */
+.history-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+.history-table th {
+  text-align: left; font-weight: 600; font-size: 11px;
+  color: var(--ink3); text-transform: uppercase; letter-spacing: .5px;
+  padding: 0 8px 8px;
+}
+.history-table td { padding: 8px; border-top: 1px solid #f0eef8; color: var(--ink2); }
+.pct-pill {
+  display: inline-block;
+  padding: 2px 8px; border-radius: 12px;
+  font-size: 12px; font-weight: 600;
+}
+.pct-high { background: var(--green-bg); color: var(--green); }
+.pct-mid { background: var(--amber-bg); color: var(--amber); }
+.pct-low { background: var(--red-bg); color: var(--red); }
+
+/* ── WEAK WORDS ───────────────────────────────────── */
+.weak-word {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-top: 1px solid #f0eef8;
+  font-size: 14px;
+}
+.weak-word .ww { font-weight: 600; }
+.weak-word .wm { font-size: 12px; color: var(--ink3); }
+.miss-badge {
+  font-size: 11px; font-weight: 600;
+  background: var(--red-bg); color: var(--red);
+  padding: 2px 8px; border-radius: 10px;
+}
+
+/* ── UTILITY ──────────────────────────────────────── */
+.hidden { display: none !important; }
+.mt8 { margin-top: 8px; }
+.mt16 { margin-top: 16px; }
+.nav-row {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-top: 14px;
+}
+.score-live { font-size: 13px; color: var(--ink3); }
+.empty-state { text-align: center; padding: 28px 16px; color: var(--ink3); font-size: 14px; }
+.section-label {
+  font-size: 11px; font-weight: 700; letter-spacing: .7px;
+  color: var(--ink3); text-transform: uppercase; margin-bottom: 10px;
+}
+
+@media (max-width: 480px) {
+  .home-grid { grid-template-columns: 1fr; }
+  .stats-strip { grid-template-columns: repeat(3, 1fr); }
+  .app-header h1 { font-size: 17px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div>
+    <h1>Maya Hamb — Module E English</h1>
+    <p>Band III Core I · Lists A &amp; B · 11th Grade</p>
+  </div>
+  <span class="version-tag">v1.0</span>
+</div>
+
+<div class="shell">
+
+  <!-- ── TABS ── -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('home')">Home</button>
+    <button class="tab" onclick="switchTab('vocab')">Vocabulary</button>
+    <button class="tab" onclick="switchTab('reading')">Reading</button>
+    <button class="tab" onclick="switchTab('flash')">Flashcards</button>
+    <button class="tab" onclick="switchTab('progress')">Progress</button>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       HOME TAB
+  ════════════════════════════════════════ -->
+  <div id="tab-home">
+    <div id="home-stats" class="hidden">
+      <div class="stats-strip">
+        <div class="stat-box"><div class="val" id="hs-total">0</div><div class="lbl">Quizzes done</div></div>
+        <div class="stat-box"><div class="val" id="hs-best">—</div><div class="lbl">Best score</div></div>
+        <div class="stat-box"><div class="val" id="hs-streak">0</div><div class="lbl">Day streak</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="section-label">Choose a mode</p>
+      <div class="home-grid">
+        <div class="mode-card" onclick="switchTab('vocab'); startVocab('AB')">
+          <div class="icon">📝</div>
+          <h3>Full vocab test</h3>
+          <p>Both lists, 12 questions</p>
+        </div>
+        <div class="mode-card" onclick="switchTab('reading'); pickRandomReading()">
+          <div class="icon">📖</div>
+          <h3>Reading exam</h3>
+          <p>Passage + 5 questions</p>
+        </div>
+        <div class="mode-card" onclick="switchTab('vocab'); showVocabMenu()">
+          <div class="icon">🔤</div>
+          <h3>Target a list</h3>
+          <p>List A only or List B only</p>
+        </div>
+        <div class="mode-card" onclick="switchTab('flash')">
+          <div class="icon">🃏</div>
+          <h3>Flashcards</h3>
+          <p>Quick review, any list</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="home-weak-section" class="card hidden">
+      <p class="section-label">Words to review</p>
+      <div id="home-weak-list"></div>
+      <button class="btn mt16" onclick="switchTab('vocab'); startWeakQuiz()">Practice weak words →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       VOCABULARY TAB
+  ════════════════════════════════════════ -->
+  <div id="tab-vocab" class="hidden">
+
+    <!-- Menu -->
+    <div id="vocab-menu">
+      <div class="card">
+        <p class="section-label">Pick a quiz</p>
+        <div class="home-grid">
+          <div class="mode-card" onclick="startVocab('A')">
+            <div class="icon">🅰️</div>
+            <h3>List A</h3>
+            <p>~180 words</p>
+          </div>
+          <div class="mode-card" onclick="startVocab('B')">
+            <div class="icon">🅱️</div>
+            <h3>List B</h3>
+            <p>~180 words</p>
+          </div>
+          <div class="mode-card" onclick="startVocab('AB')">
+            <div class="icon">⭐</div>
+            <h3>Both lists</h3>
+            <p>Full practice</p>
+          </div>
+          <div class="mode-card" onclick="startWeakQuiz()">
+            <div class="icon">🎯</div>
+            <h3>Weak words</h3>
+            <p>Words I missed</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz -->
+    <div id="vocab-quiz" class="hidden">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="vq-label">Question 1 of 12</span>
+          <span id="vq-score-live" class="score-live"></span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="vq-bar" style="width:0%"></div></div>
+      </div>
+      <div class="card">
+        <p class="q-label" id="vq-list-tag">Vocabulary</p>
+        <p class="q-word" id="vq-word"></p>
+        <p class="q-pos" id="vq-pos"></p>
+        <p class="q-prompt">Choose the correct meaning:</p>
+        <div class="options" id="vq-opts"></div>
+        <div class="feedback" id="vq-feedback"></div>
+      </div>
+      <div class="nav-row">
+        <button class="btn" onclick="showVocabMenu()">← Quit</button>
+        <button class="btn btn-primary hidden" id="vq-next" onclick="nextVocab()">Next question →</button>
+      </div>
+    </div>
+
+    <!-- Done -->
+    <div id="vocab-done" class="hidden">
+      <div class="card score-screen">
+        <div class="score-ring">
+          <span class="num" id="vd-num"></span>
+          <span class="den" id="vd-den"></span>
+        </div>
+        <div class="score-title" id="vd-title"></div>
+        <div class="score-sub" id="vd-sub"></div>
+        <div class="btn-row" style="justify-content:center">
+          <button class="btn" onclick="startVocab(lastVocabList)">Try again</button>
+          <button class="btn btn-primary" onclick="showVocabMenu()">Other quiz</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════════
+       READING TAB
+  ════════════════════════════════════════ -->
+  <div id="tab-reading" class="hidden">
+
+    <div id="reading-menu">
+      <div class="card">
+        <p class="section-label">Reading exams — choose a passage</p>
+        <div id="reading-passage-list"></div>
+      </div>
+    </div>
+
+    <div id="reading-passage" class="hidden">
+      <div class="card">
+        <div class="passage-title" id="rp-title"></div>
+        <div class="passage" id="rp-body"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="showReadingMenu()">← Back</button>
+        <button class="btn btn-primary" onclick="startReadingQs()">Answer questions →</button>
+      </div>
+    </div>
+
+    <div id="reading-qs" class="hidden">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="rq-label">Question 1 of 5</span>
+          <span id="rq-score-live" class="score-live"></span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="rq-bar" style="width:0%"></div></div>
+      </div>
+      <div class="card">
+        <p class="q-label" id="rq-type-tag">Reading comprehension</p>
+        <p class="q-prompt" id="rq-question" style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:0;line-height:1.5"></p>
+        <p class="q-prompt" id="rq-instruction" style="margin-top:6px"></p>
+        <div class="options" id="rq-opts"></div>
+        <div class="feedback" id="rq-feedback"></div>
+      </div>
+      <div class="nav-row">
+        <button class="btn" onclick="showReadingMenu()">← Quit</button>
+        <button class="btn btn-primary hidden" id="rq-next" onclick="nextReading()">Next →</button>
+      </div>
+    </div>
+
+    <div id="reading-done" class="hidden">
+      <div class="card score-screen">
+        <div class="score-ring">
+          <span class="num" id="rd-num"></span>
+          <span class="den" id="rd-den"></span>
+        </div>
+        <div class="score-title" id="rd-title"></div>
+        <div class="score-sub" id="rd-sub"></div>
+        <div class="btn-row" style="justify-content:center">
+          <button class="btn" onclick="readPassage(currentReadingIdx)">Try again</button>
+          <button class="btn btn-primary" onclick="showReadingMenu()">Other passage</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════════
+       FLASHCARDS TAB
+  ════════════════════════════════════════ -->
+  <div id="tab-flash" class="hidden">
+
+    <div id="flash-menu">
+      <div class="card">
+        <p class="section-label">Choose a deck</p>
+        <div class="home-grid">
+          <div class="mode-card" onclick="initFlash('A')">
+            <div class="icon">🅰️</div><h3>List A</h3><p>All List A words</p>
+          </div>
+          <div class="mode-card" onclick="initFlash('B')">
+            <div class="icon">🅱️</div><h3>List B</h3><p>All List B words</p>
+          </div>
+          <div class="mode-card" onclick="initFlash('AB')">
+            <div class="icon">🔀</div><h3>Both shuffled</h3><p>Full random deck</p>
+          </div>
+          <div class="mode-card" onclick="initFlash('WEAK')">
+            <div class="icon">🎯</div><h3>Weak words</h3><p>Words I missed</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="flash-active" class="hidden">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="fc-counter"></span>
+          <span id="fc-deck-name" class="score-live"></span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="fc-bar" style="width:0%"></div></div>
+      </div>
+      <div class="card flashcard" id="flashcard" onclick="flipCard()">
+        <div class="fc-word" id="fc-word"></div>
+        <div class="fc-meta" id="fc-meta"></div>
+        <div class="fc-meaning" id="fc-meaning"></div>
+        <div class="fc-tap" id="fc-tap">Tap to reveal meaning</div>
+      </div>
+      <div class="nav-row">
+        <button class="btn" onclick="prevCard()">← Prev</button>
+        <button class="btn" onclick="document.getElementById('flash-menu').classList.remove('hidden'); document.getElementById('flash-active').classList.add('hidden')">Decks</button>
+        <button class="btn" onclick="nextCard()">Next →</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════════
+       PROGRESS TAB
+  ════════════════════════════════════════ -->
+  <div id="tab-progress" class="hidden">
+
+    <div class="card">
+      <p class="section-label">My scores</p>
+      <div id="prog-history">
+        <div class="empty-state">No quizzes completed yet.<br>Start a vocab or reading quiz!</div>
+      </div>
+    </div>
+
+    <div class="card" id="prog-weak-card">
+      <p class="section-label">Words I struggle with</p>
+      <div id="prog-weak-list">
+        <div class="empty-state">Words you miss often will appear here.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="section-label">Reset data</p>
+      <p style="font-size:13px;color:var(--ink3);margin-bottom:12px">This will delete all your score history and word stats.</p>
+      <button class="btn" onclick="confirmReset()">Reset progress</button>
+    </div>
+
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA — VOCABULARY
+// ═══════════════════════════════════════════════════════
+
+const VOCAB_A = [
+  {w:"addition",pos:"n",fam:"additional (adj)",m:"something that is added; an extra thing"},
+  {w:"advance",pos:"n",m:"progress; forward movement"},
+  {w:"advanced",pos:"adj",m:"modern, high level; beyond the basics"},
+  {w:"advertising",pos:"n",m:"publicizing products or services to attract buyers"},
+  {w:"appear",pos:"v",fam:"appearance (n)",m:"to seem; to come into sight"},
+  {w:"approach",pos:"v/n",m:"to deal with something; a method or way of doing something"},
+  {w:"average",pos:"adj",m:"ordinary, usual; not special or exceptional"},
+  {w:"challenge",pos:"v",m:"to express disagreement; to question or dispute"},
+  {w:"chance",pos:"n",m:"risk; possibility that something may happen"},
+  {w:"characteristic",pos:"n",fam:"characterize (v)",m:"a feature or quality that makes something recognizable"},
+  {w:"claim",pos:"v",m:"to state something as fact; to make a statement"},
+  {w:"common",pos:"adj",m:"shared; happening or found often"},
+  {w:"complicated",pos:"adj",fam:"complicate (v)",m:"difficult to understand or deal with"},
+  {w:"concern",pos:"v",fam:"concerned (adj)",m:"to worry about; to relate to"},
+  {w:"conduct",pos:"v",m:"to carry out; to organize and perform an activity"},
+  {w:"consequence",pos:"n",fam:"consequently (adv)",m:"a result or effect of an action or situation"},
+  {w:"cope with",pos:"v",m:"to deal successfully with a difficult situation"},
+  {w:"critic",pos:"n",fam:"criticize (v), criticism (n)",m:"a person who expresses disapproval or judges negatively"},
+  {w:"current",pos:"adj",fam:"currently (adv)",m:"happening or existing now; of the present time"},
+  {w:"decrease",pos:"v/n",m:"to become smaller or fewer; a reduction"},
+  {w:"deliberately",pos:"adv",fam:"deliberate (adj)",m:"done on purpose; intentionally, not by accident"},
+  {w:"demonstrate",pos:"v",fam:"demonstration (n)",m:"to show clearly; to prove; also to march in protest"},
+  {w:"design",pos:"n",fam:"designer (n)",m:"a plan or pattern; decoration or arrangement"},
+  {w:"destruction",pos:"n",m:"the act of destroying something completely"},
+  {w:"development",pos:"n",fam:"developing / developed (adj)",m:"a process of growth; an event or change"},
+  {w:"disaster",pos:"n",m:"a sudden event causing great damage or suffering"},
+  {w:"discovery",pos:"n",m:"finding something for the first time; something newly found"},
+  {w:"doubt",pos:"v",m:"to feel uncertain or unsure about something"},
+  {w:"educate",pos:"v",fam:"educated (adj), educator (n)",m:"to teach; to provide schooling or training"},
+  {w:"efficient",pos:"adj",fam:"efficiency (n)",m:"working well without wasting time or effort"},
+  {w:"emphasis",pos:"n",fam:"emphasize (v)",m:"special importance or attention given to something"},
+  {w:"enjoyable",pos:"adj",fam:"enjoyment (n)",m:"giving pleasure; pleasant to experience"},
+  {w:"exist",pos:"v",fam:"existence (n), existing (adj)",m:"to be real; to be present in the world"},
+  {w:"extraordinary",pos:"adj",m:"very unusual or remarkable; beyond what is ordinary"},
+  {w:"feature",pos:"n",m:"an important or distinctive part of something"},
+  {w:"flexible",pos:"adj",fam:"flexibility (n)",m:"able to change or be changed easily; adaptable"},
+  {w:"flood",pos:"v/n",m:"a large overflow of water; to fill something to excess"},
+  {w:"focus on",pos:"v",m:"to give attention to; to concentrate on something"},
+  {w:"frequent",pos:"adj",fam:"frequency (n)",m:"happening often; occurring many times"},
+  {w:"gain",pos:"v/n",m:"to get or obtain something; an increase"},
+  {w:"generate",pos:"v",m:"to create; to produce something"},
+  {w:"ideal",pos:"adj",m:"perfect; best possible for a purpose"},
+  {w:"illustrate",pos:"v",fam:"illustration (n)",m:"to make clear using examples or pictures"},
+  {w:"image",pos:"n",m:"a picture or representation; especially on film or television"},
+  {w:"intelligence",pos:"n",fam:"intelligent (adj)",m:"the ability to learn, understand, and think clearly"},
+  {w:"invest",pos:"v",fam:"investor (n), investment (n)",m:"to put money, time, or effort into something expecting a return"},
+  {w:"investigate",pos:"v",fam:"investigation (n), investigator (n)",m:"to look into carefully; to examine in detail"},
+  {w:"limited",pos:"adj",fam:"limitation (n)",m:"not large or great in amount; restricted"},
+  {w:"mention",pos:"v/n",m:"to refer to something briefly; a brief reference"},
+  {w:"means",pos:"n",m:"a method or way of doing something"},
+  {w:"misunderstand",pos:"v",m:"to understand something incorrectly"},
+  {w:"naturally",pos:"adv",m:"as expected; normally; of course"},
+  {w:"necessarily",pos:"adv",m:"as a necessary result; unavoidably"},
+  {w:"nevertheless",pos:"adv",m:"in spite of that; however; despite what was just said"},
+  {w:"official",pos:"adj",m:"approved or authorized by authority; formal"},
+  {w:"participate",pos:"v",fam:"participant (n), participation (n)",m:"to take part in an activity or event"},
+  {w:"particular",pos:"adj",fam:"particularly (adv)",m:"specific; more important or noticeable than usual"},
+  {w:"perform",pos:"v",fam:"performance (n)",m:"to carry out an action; to show how successful someone is"},
+  {w:"personality",pos:"n",m:"the qualities and characteristics that make a person unique"},
+  {w:"planet",pos:"n",m:"a large celestial body that orbits a star"},
+  {w:"pollution",pos:"n",fam:"pollute (v)",m:"harmful substances introduced into the environment"},
+  {w:"prevent",pos:"v",fam:"prevention (n)",m:"to stop something from happening"},
+  {w:"profession",pos:"n",fam:"professional (adj)",m:"a paid occupation requiring special training or skill"},
+  {w:"proof",pos:"n",m:"evidence that shows something is true"},
+  {w:"protest",pos:"n/v",m:"to demonstrate against something; to express strong disagreement"},
+  {w:"psychology",pos:"n",fam:"psychological (adj), psychologist (n)",m:"the study of the mind and human behaviour"},
+  {w:"react",pos:"v",fam:"reaction (n)",m:"to respond to something; a response to an event"},
+  {w:"recommend",pos:"v",fam:"recommendation (n)",m:"to suggest something as good or suitable"},
+  {w:"recycle",pos:"v",m:"to process used materials so they can be used again"},
+  {w:"region",pos:"n",fam:"regional (adj)",m:"an area of a country or the world"},
+  {w:"relevant",pos:"adj",fam:"relevance (n)",m:"connected to what is being discussed; important to the topic"},
+  {w:"reliable",pos:"adj",m:"consistently good; that can be trusted or depended on"},
+  {w:"research",pos:"v/n",fam:"researcher (n)",m:"careful study to find and learn new information"},
+  {w:"result",pos:"n",fam:"resulting (adj)",m:"the outcome or consequence of an action or process"},
+  {w:"revise",pos:"v",fam:"revision (n)",m:"to change or correct something; to study for an exam"},
+  {w:"risk",pos:"n/v",m:"the possibility of something bad happening; to do something dangerous"},
+  {w:"rural",pos:"adj",m:"relating to the countryside; not urban"},
+  {w:"salary",pos:"n",m:"a fixed regular payment for employment"},
+  {w:"seldom",pos:"adv",m:"not often; rarely"},
+  {w:"significant",pos:"adj",fam:"significantly (adv), significance (n)",m:"important; having a major or noticeable effect"},
+  {w:"specialist",pos:"n",fam:"specialize (v)",m:"a person with expert knowledge in a specific field"},
+  {w:"structure",pos:"n",m:"the way something is organized or built"},
+  {w:"theory",pos:"n",fam:"theoretical (adj)",m:"an idea or set of ideas intended to explain something"},
+  {w:"transport",pos:"n/v",fam:"transportation (n)",m:"a system for carrying people or goods from place to place"},
+  {w:"treatment",pos:"n",m:"the way someone or something is dealt with; medical care"},
+  {w:"unique",pos:"adj",m:"being the only one of its kind; unlike anything else"},
+  {w:"unite",pos:"v",fam:"united (adj), unity (n)",m:"to come together as one group"},
+  {w:"universe",pos:"n",fam:"universal (adj)",m:"all of space and everything in it"},
+  {w:"urban",pos:"adj",m:"relating to a town or city"},
+  {w:"vary",pos:"v",fam:"variation (n)",m:"to be different; to change from one thing to another"},
+  {w:"visible",pos:"adj",m:"able to be seen; noticeable"},
+  {w:"vision",pos:"n",m:"a dream, hope or idea about the future"},
+  {w:"wildlife",pos:"n",m:"wild animals and plants living in natural conditions"},
+  {w:"worthwhile",pos:"adj",m:"worth the time, effort, or money spent on it"},
+  {w:"among other things",pos:"chunk",m:"in addition to other matters; besides other things"},
+  {w:"at least",pos:"chunk",m:"not less than; as a minimum"},
+  {w:"be responsible for",pos:"chunk",m:"to be the cause of; to have a duty to do something"},
+  {w:"even if",pos:"chunk",m:"despite the possibility that; regardless of whether"},
+  {w:"even though",pos:"chunk",m:"despite the fact that; although"},
+  {w:"focus on",pos:"chunk",m:"to give special attention to; to concentrate on"},
+  {w:"in actual fact",pos:"chunk",m:"in reality; used to emphasize what is really true"},
+  {w:"in the meantime",pos:"chunk",m:"in the time between two events; meanwhile"},
+  {w:"more or less",pos:"chunk",m:"approximately; almost; to a certain degree"},
+  {w:"on the one hand ... on the other hand",pos:"chunk",m:"used to introduce two contrasting points"},
+  {w:"run out of",pos:"chunk",m:"to use all of something so that nothing is left"},
+  {w:"take advantage of",pos:"chunk",m:"to use a situation or person for your own benefit"},
+  {w:"thanks to",pos:"chunk",m:"as a result of; because of (usually positive)"},
+  {w:"throw away",pos:"chunk",m:"to discard something; to put something in the bin"},
+];
+
+const VOCAB_B = [
+  {w:"acquire",pos:"v",fam:"acquisition (n)",m:"to get or obtain something"},
+  {w:"agriculture",pos:"n",fam:"agricultural (adj)",m:"farming; the practice of growing crops and raising animals"},
+  {w:"anxious",pos:"adj",fam:"anxiety (n)",m:"worried and nervous about what might happen"},
+  {w:"apparently",pos:"adv",fam:"apparent (adj)",m:"seemingly; based on what appears to be true"},
+  {w:"appropriate",pos:"adj",m:"suitable or right for a particular situation"},
+  {w:"atmosphere",pos:"n",m:"the layer of gases surrounding Earth; the mood of a place"},
+  {w:"automatically",pos:"adv",m:"without thinking; by itself without human control"},
+  {w:"brilliant",pos:"adj",m:"very intelligent or clever; outstanding in quality"},
+  {w:"calculate",pos:"v",fam:"calculator (n)",m:"to find an answer using mathematics"},
+  {w:"competitive",pos:"adj",fam:"competitor (n)",m:"eager to win or be more successful than others"},
+  {w:"contemporary",pos:"adj",m:"belonging to the present time; modern"},
+  {w:"contest",pos:"n",m:"a competition in which people try to win"},
+  {w:"decade",pos:"n",m:"a period of ten years"},
+  {w:"declare",pos:"v",fam:"declaration (n)",m:"to state something officially or publicly"},
+  {w:"detect",pos:"v",m:"to notice or discover something, especially using instruments"},
+  {w:"determine",pos:"v",m:"to decide or establish something; to be the cause of"},
+  {w:"disappointed",pos:"adj",fam:"disappointment (n)",m:"unhappy because something was not as good as hoped"},
+  {w:"domestic",pos:"adj",m:"relating to the home or one's own country (not foreign)"},
+  {w:"double",pos:"v/adv",m:"to become twice as much; two times as much"},
+  {w:"emotion",pos:"n",fam:"emotional (adj)",m:"a strong feeling such as love, fear, anger or happiness"},
+  {w:"exception",pos:"n",m:"something or someone that is not included in a general rule"},
+  {w:"expedition",pos:"n",m:"a journey made for a specific purpose, especially exploration"},
+  {w:"expense",pos:"n",fam:"at the expense of",m:"the cost of something; money spent on something"},
+  {w:"expression",pos:"n",m:"a word or phrase; the act of showing a feeling"},
+  {w:"extreme",pos:"adj",m:"very great or intense; far beyond what is normal"},
+  {w:"generation",pos:"n",m:"all the people born and living at around the same time"},
+  {w:"genuine",pos:"adj",m:"real and truly what it appears to be; not fake"},
+  {w:"get rid of",pos:"chunk",m:"to remove or throw away something you no longer want"},
+  {w:"hidden",pos:"adj",m:"not visible; kept secret or out of sight"},
+  {w:"identical",pos:"adj",m:"exactly the same in every way"},
+  {w:"immigration",pos:"n",fam:"immigrant (n)",m:"coming to live permanently in a foreign country"},
+  {w:"impressive",pos:"adj",fam:"impress (v)",m:"evoking admiration; making a strong positive effect"},
+  {w:"incredible",pos:"adj",fam:"incredibly (adv)",m:"impossible or very difficult to believe; amazing"},
+  {w:"interaction",pos:"n",fam:"interact (v)",m:"communication or direct involvement with someone or something"},
+  {w:"interpret",pos:"v",m:"to explain the meaning of something; to translate"},
+  {w:"interrupt",pos:"v",fam:"interruption (n)",m:"to stop someone while they are speaking or doing something"},
+  {w:"involvement",pos:"n",fam:"involved (adj), involve (v)",m:"the act of taking part or having a connection with something"},
+  {w:"journalist",pos:"n",m:"a person who writes or reports news for media"},
+  {w:"justice",pos:"n",fam:"just (adj)",m:"fairness; the quality of treating people equally and fairly"},
+  {w:"kit",pos:"n",m:"a set of equipment or tools for a specific purpose"},
+  {w:"lecture",pos:"n/v",m:"an educational talk given to an audience; to give such a talk"},
+  {w:"logical",pos:"adj",fam:"logic (n)",m:"based on clear, correct reasoning; making sense"},
+  {w:"lower",pos:"v",m:"to move something down; to reduce"},
+  {w:"mixture",pos:"n",m:"a combination of different things together"},
+  {w:"nightmare",pos:"n",m:"a frightening dream; a very unpleasant experience"},
+  {w:"nonsense",pos:"n",m:"ideas or statements that are not true or that make no sense"},
+  {w:"occupation",pos:"n",m:"a job or profession; something you spend time doing"},
+  {w:"operate",pos:"v",fam:"operation (n)",m:"to work or function; to perform surgery"},
+  {w:"outstanding",pos:"adj",m:"exceptionally good; excellent; better than all others"},
+  {w:"patient",pos:"adj",fam:"patience (n)",m:"able to wait calmly without becoming annoyed"},
+  {w:"peculiar",pos:"adj",m:"strange or unusual; belonging to a specific place or person"},
+  {w:"potential",pos:"n",fam:"potentially (adv)",m:"the possibility of developing into something in the future"},
+  {w:"promote",pos:"v",fam:"promotion (n)",m:"to raise to a higher position; to support or publicize"},
+  {w:"reach",pos:"v/n",m:"to stretch out and touch; to arrive at a place or level"},
+  {w:"reflect",pos:"v",fam:"reflection (n)",m:"to show an image; to think carefully about something"},
+  {w:"register",pos:"n/v",fam:"registration (n)",m:"to record officially; an official list"},
+  {w:"regret",pos:"v/n",m:"to feel sad about something that happened; such a feeling"},
+  {w:"relate",pos:"v",fam:"related (adj), relationship (n)",m:"to connect; to have a connection with something"},
+  {w:"relax",pos:"v",fam:"relaxed (adj)",m:"to become less tense or worried; to rest"},
+  {w:"remark",pos:"v/n",m:"to say something as a comment; a comment or statement"},
+  {w:"remote",pos:"adj",m:"far from where people live; distant and isolated"},
+  {w:"replace",pos:"v",fam:"replacement (n)",m:"to put something new in place of something else"},
+  {w:"rescue",pos:"v/n",m:"to save someone from danger; the act of saving someone"},
+  {w:"retire",pos:"v",fam:"retired (adj), retirement (n)",m:"to stop working, usually because of age"},
+  {w:"rough",pos:"adj",fam:"roughly (adv)",m:"not exact; approximately; not smooth or gentle"},
+  {w:"rule",pos:"n",m:"a law or regulation that must be followed"},
+  {w:"satisfy",pos:"v",fam:"satisfaction (n), satisfied (adj)",m:"to meet the needs or expectations of; to please"},
+  {w:"scale",pos:"n",m:"the size or extent of something; a measuring system; ratio"},
+  {w:"sensitive",pos:"adj",fam:"sensitivity (n)",m:"easily affected by or aware of the feelings of others"},
+  {w:"shortly",pos:"adv",m:"soon; in a short amount of time"},
+  {w:"similarity",pos:"n",m:"a way in which people or things are alike"},
+  {w:"spectacular",pos:"adj",m:"very impressive or dramatic; beautiful in a striking way"},
+  {w:"speech",pos:"n",m:"a formal talk given to an audience"},
+  {w:"summary",pos:"n",m:"a short statement giving the main points of something"},
+  {w:"survive",pos:"v",fam:"survival (n), survivor (n)",m:"to continue to live or exist despite difficulty or danger"},
+  {w:"theme",pos:"n",m:"the main subject or idea in a piece of writing or discussion"},
+  {w:"treasure",pos:"n",m:"a collection of valuable things; something highly valued"},
+  {w:"uncomfortable",pos:"adj",m:"not physically or mentally at ease; causing discomfort"},
+  {w:"underneath",pos:"prep/adv",m:"below; under the surface or bottom of something"},
+  {w:"unemployed",pos:"adj",m:"not having a paid job; out of work"},
+  {w:"unexpected",pos:"adj",m:"not expected or planned for; surprising"},
+  {w:"urgent",pos:"adj",fam:"urgently (adv)",m:"requiring immediate action or attention"},
+  {w:"wealth",pos:"n",fam:"wealthy (adj)",m:"a large amount of money or valuable possessions; richness"},
+  {w:"all of a sudden",pos:"chunk",m:"unexpectedly; quickly and without warning"},
+  {w:"at the expense of",pos:"chunk",m:"by causing harm or loss to someone or something else"},
+  {w:"either way",pos:"chunk",m:"in any case; regardless of which option is chosen"},
+  {w:"fed up",pos:"chunk",m:"annoyed or bored because something has gone on too long"},
+  {w:"it looks like",pos:"chunk",m:"it seems that; it appears that"},
+  {w:"on the whole",pos:"chunk",m:"generally; considering everything; in most cases"},
+  {w:"sooner or later",pos:"chunk",m:"eventually; at some point in the future"},
+  {w:"straight away",pos:"chunk",m:"immediately; without any delay"},
+  {w:"take into account",pos:"chunk",m:"to consider something when making a decision"},
+  {w:"take part",pos:"chunk",m:"to participate; to join in an activity"},
+  {w:"take place",pos:"chunk",m:"to happen; to occur"},
+  {w:"to start with",pos:"chunk",m:"at the beginning; firstly"},
+];
+
+// ═══════════════════════════════════════════════════════
+// DATA — READING PASSAGES (10 unique passages)
+// ═══════════════════════════════════════════════════════
+
+const PASSAGES = [
+  {
+    title: "Street music",
+    text: `<p><strong>I</strong> &nbsp;Every weekend, hundreds of musicians take to the streets of cities around the world to perform for passers-by. Known as "buskers", these performers play everything from classical violin to electronic beats, turning ordinary pavements and metro stations into impromptu concert halls. In some cities, such as London and New York, busking has a long tradition stretching back centuries.</p>
+<p><strong>II</strong> &nbsp;While busking might seem like a simple way to earn money, it is in fact a demanding profession. Most cities require buskers to apply for a licence before they are allowed to perform in public spaces. In London, for example, performers must pass an audition to play on the underground train system, and only a limited number of licences are issued each year.</p>
+<p><strong>III</strong> &nbsp;Some cities have designated areas where buskers can perform freely without needing official permission. These spots are popular with tourists, who often stop to listen and take photographs. Some performers have even become famous after videos of their street performances went viral on social media, attracting millions of viewers around the world.</p>
+<p><strong>IV</strong> &nbsp;Busking is not without its challenges. Performers must deal with unpredictable weather, noise from traffic, and competition from other musicians. Some residents living near popular busking spots have complained about the noise, leading local authorities to impose time restrictions on when and where buskers may perform.</p>
+<p><strong>V</strong> &nbsp;Despite these difficulties, many musicians choose busking because it gives them freedom to express themselves creatively without the pressure of a formal concert setting. As one experienced busker put it: "Out here, every performance is unique. The audience changes every minute, and that keeps me motivated."</p>`,
+    qs: [
+      {q:"What do we learn about buskers in paragraph I?", type:"mc", opts:["How they choose their songs","Where they get their instruments","What kind of music they play","Why cities pay them to perform"], ans:2, explain:"Paragraph I says buskers play everything from classical violin to electronic beats — telling us what kind of music they perform."},
+      {q:"What information is given about getting a licence in London? (paragraph II)", type:"mc", opts:["Licences are free for anyone who applies","Performers must pass an audition","Only foreign musicians need a licence","Licences are issued every month"], ans:1, explain:"Paragraph II states performers must pass an audition to play on the London underground, and only a limited number of licences are issued."},
+      {q:"According to paragraph III, how have some buskers become famous?", type:"mc", opts:["By performing in large concert halls","By posting their own videos online","After videos of their performances spread on social media","By winning official music competitions"], ans:2, explain:"Paragraph III says some performers became famous after videos of their street performances went viral on social media."},
+      {q:"What challenges do buskers face? (paragraph IV) PUT A ✓ BY THE TWO CORRECT ANSWERS.", type:"multi2", opts:["They must deal with bad weather","Local authorities always support them","They face competition from other musicians","They earn too much money"], ans:[0,2], explain:"Paragraph IV mentions unpredictable weather and competition from other musicians as challenges for buskers."},
+      {q:"What does the busker mean when he says 'every performance is unique'? (paragraph V)", type:"mc", opts:["He never plays the same song twice","The audience and experience are always different","He performs in a different city every day","He only performs once a year"], ans:1, explain:"He explains that 'the audience changes every minute' — so each performance is different because the crowd is always new."},
+    ]
+  },
+  {
+    title: "Ocean plastic",
+    text: `<p><strong>I</strong> &nbsp;Every year, millions of tonnes of plastic waste end up in the world's oceans. Scientists estimate that there are now more than five trillion pieces of plastic floating in the sea, harming marine life and polluting coastlines across the globe. The problem has grown so serious that researchers have found microplastics — tiny pieces of plastic less than five millimetres in size — in fish, seabirds, and even in drinking water.</p>
+<p><strong>II</strong> &nbsp;Most ocean plastic comes from land. It enters the sea through rivers, drainage systems, and by being blown off beaches or landfill sites. Wealthier countries tend to produce more plastic waste per person, but poorer countries often lack the infrastructure to manage it properly. As a result, experts say that the countries responsible for the most pollution are not always the ones that suffer most from its effects.</p>
+<p><strong>III</strong> &nbsp;Several organisations have been working to remove plastic from the ocean. One well-known project uses a long floating barrier to collect plastic as it drifts on the surface. The collected material is then brought to shore, sorted, and recycled. While such projects are impressive, critics point out that they cannot remove microplastics, which are too small to catch.</p>
+<p><strong>IV</strong> &nbsp;Governments around the world have introduced laws to reduce plastic use. Many countries have banned single-use plastic bags and packaging. Some have introduced taxes on plastic products, making them more expensive to encourage people to switch to alternatives. However, environmental groups argue that these measures do not go far enough and that more dramatic action is needed.</p>
+<p><strong>V</strong> &nbsp;Individuals can also make a difference. Choosing products with less packaging, refusing disposable plastics, and taking part in beach clean-ups are simple steps that anyone can take. As one environmental campaigner explained: "Each piece of plastic you refuse to use is one piece that will never reach the sea."</p>`,
+    qs: [
+      {q:"What do we learn about microplastics in paragraph I?", type:"mc", opts:["They are found only in the deepest parts of the ocean","They have been found in fish, seabirds, and drinking water","They are larger than five millimetres","They were discovered last year"], ans:1, explain:"Paragraph I states that researchers found microplastics in fish, seabirds, and even in drinking water."},
+      {q:"According to paragraph II, where does most ocean plastic come from?", type:"mc", opts:["From ships at sea","From underwater factories","From land, through rivers and drainage systems","From fishing boats"], ans:2, explain:"Paragraph II says most ocean plastic comes from land — entering the sea through rivers, drainage systems, and blown from beaches."},
+      {q:"What is the problem with projects that use floating barriers? (paragraph III)", type:"mc", opts:["They are too expensive to operate","They cannot remove microplastics","They damage marine life","They only work in warm water"], ans:1, explain:"Paragraph III says critics point out that such projects cannot remove microplastics, which are too small to catch."},
+      {q:"What have some governments done to reduce plastic use? (paragraph IV) PUT A ✓ BY THE TWO CORRECT ANSWERS.", type:"multi2", opts:["Banned single-use plastic bags","Paid people to collect plastic","Introduced taxes on plastic products","Built more recycling factories"], ans:[0,2], explain:"Paragraph IV mentions banning single-use plastic bags AND introducing taxes on plastic products as government measures."},
+      {q:"What does the campaigner mean by 'Each piece of plastic you refuse to use is one piece that will never reach the sea'? (paragraph V)", type:"mc", opts:["Plastic should be left at home","Personal choices can prevent pollution","The sea is already clean","Plastic bags are not harmful"], ans:1, explain:"The campaigner means that individual decisions to avoid plastic directly reduce the amount of plastic that ends up in the ocean."},
+    ]
+  },
+  {
+    title: "Sleep and learning",
+    text: `<p><strong>I</strong> &nbsp;For many students, staying up late to study before an exam seems like a good idea. However, research into how the brain works suggests that this approach may actually be harmful. Scientists have discovered that sleep plays a crucial role in the way we learn and remember new information. Without enough sleep, the brain struggles to store and organise the knowledge it has acquired during the day.</p>
+<p><strong>II</strong> &nbsp;During sleep, the brain goes through several stages. In the deepest stage, known as slow-wave sleep, the brain replays the experiences of the day. It strengthens the connections between brain cells that were formed during learning, turning short-term memories into long-term ones. This process, called memory consolidation, is essential for genuine understanding rather than simply repeating information.</p>
+<p><strong>III</strong> &nbsp;Studies have shown that students who sleep well before an exam consistently perform better than those who do not. In one experiment, two groups of students were asked to learn a list of words. The group that slept for eight hours before being tested remembered significantly more words than the group that stayed awake. Researchers concluded that sleep had effectively doubled the benefits of studying.</p>
+<p><strong>IV</strong> &nbsp;Some schools have begun to take this research seriously. In several countries, high schools have moved their start times to later in the morning to give teenagers more sleep. Teenagers need more sleep than adults — experts recommend between eight and ten hours per night — because their brains are still developing. Early school starts interfere with this natural sleep cycle.</p>
+<p><strong>V</strong> &nbsp;The message for students is clear. Rather than sacrificing sleep in order to study longer, it is more effective to study well during the day and then get a full night's rest. As one sleep researcher put it: "Sleeping is not wasting time — it is when the real learning happens."</p>`,
+    qs: [
+      {q:"What does research suggest about staying up late to study? (paragraph I)", type:"mc", opts:["It is the best way to prepare for an exam","It may actually be harmful","It works well for most students","It helps the brain store information"], ans:1, explain:"Paragraph I says research suggests that staying up late to study may actually be harmful, as sleep is crucial for learning."},
+      {q:"What happens during slow-wave sleep? (paragraph II) COMPLETE THE SENTENCE: The brain ...", type:"mc", opts:["produces new brain cells","forgets unimportant information","replays the experiences of the day","stops storing memories"], ans:2, explain:"Paragraph II says that during slow-wave sleep, the brain replays the experiences of the day and strengthens connections between brain cells."},
+      {q:"What did the experiment in paragraph III show?", type:"mc", opts:["Studying longer is always better than sleeping","Students who slept eight hours remembered significantly more words","The two groups performed equally well","Staying awake helped memory"], ans:1, explain:"Paragraph III explains that the group who slept eight hours remembered significantly more words than those who stayed awake."},
+      {q:"Why have some schools changed their start times? (paragraph IV) PUT A ✓ BY THE TWO CORRECT ANSWERS.", type:"multi2", opts:["To give teenagers more time to sleep","To help teachers arrive earlier","Because teenagers' brains are still developing","To reduce the number of subjects taught"], ans:[0,2], explain:"Paragraph IV says schools moved start times later because teenagers need more sleep AND because their brains are still developing."},
+      {q:"What does the researcher mean when he says 'Sleeping is not wasting time — it is when the real learning happens'? (paragraph V)", type:"mc", opts:["Students should sleep instead of studying","Sleep is when the brain actually processes and stores what was learned","Studying while sleepy is effective","Learning happens only at night"], ans:1, explain:"The researcher means that during sleep, the brain processes and consolidates what was learned during the day — so sleep is an essential part of learning."},
+    ]
+  },
+  {
+    title: "Urban farming",
+    text: `<p><strong>I</strong> &nbsp;In cities around the world, an unusual trend is taking hold. Instead of fields and farmland, some people are growing vegetables, herbs, and even fruit on rooftops, in empty lots, and in repurposed warehouses. This movement, known as urban farming, is changing the way city dwellers think about where their food comes from. In cities like Singapore, New York, and Amsterdam, urban farms are now supplying fresh produce directly to local restaurants and supermarkets.</p>
+<p><strong>II</strong> &nbsp;Urban farming takes many different forms. Some farmers use soil in raised beds on rooftops, while others use a system called hydroponics, in which plants are grown in water enriched with nutrients, without any soil at all. Vertical farms — where plants grow in stacked layers under artificial lighting — allow even more crops to be produced in a small area. These systems can produce food year-round, regardless of the weather outside.</p>
+<p><strong>III</strong> &nbsp;Supporters of urban farming argue that it has significant benefits. Because the food is grown close to where it will be eaten, it does not need to travel long distances, reducing carbon emissions from transportation. Fresh produce that goes from farm to table within hours is also more nutritious than food that has spent days in transit. In addition, urban farms can be built on unused land, making productive use of space that would otherwise go to waste.</p>
+<p><strong>IV</strong> &nbsp;However, urban farming is not without its critics. Setting up a vertical farm or hydroponic system requires a large initial investment. The artificial lighting used in indoor farms consumes a great deal of electricity, which raises concerns about environmental impact. Critics also argue that urban farms can only ever produce a fraction of the food needed to feed a city, making them an interesting supplement but not a realistic replacement for traditional agriculture.</p>
+<p><strong>V</strong> &nbsp;Despite these limitations, many city planners see urban farming as an important part of a more sustainable future. As one expert explained: "We are not trying to replace the countryside. We are trying to make cities smarter, greener, and more self-sufficient."</p>`,
+    qs: [
+      {q:"What is urban farming? (paragraph I)", type:"mc", opts:["A traditional method of farming in the countryside","Growing food in cities on rooftops, empty lots, and warehouses","A government programme to reduce food prices","A new type of supermarket selling local food"], ans:1, explain:"Paragraph I defines urban farming as growing vegetables, herbs, and fruit on rooftops, in empty lots, and in repurposed warehouses in cities."},
+      {q:"What is hydroponics? (paragraph II)", type:"mc", opts:["A type of rooftop soil farming","A system using artificial lighting only","Growing plants in water enriched with nutrients, without soil","A method for growing fruit trees in cities"], ans:2, explain:"Paragraph II explains that hydroponics is a system where plants are grown in water enriched with nutrients, without any soil."},
+      {q:"According to paragraph III, what are TWO benefits of urban farming? PUT A ✓ BY THE TWO CORRECT ANSWERS.", type:"multi2", opts:["It reduces carbon emissions from transportation","It requires no initial investment","Fresh produce is more nutritious because it travels less","It can completely replace traditional farming"], ans:[0,2], explain:"Paragraph III mentions that urban farming reduces carbon emissions AND that fresh produce grown nearby is more nutritious because it doesn't spend days in transit."},
+      {q:"What concern do critics raise about indoor farms? (paragraph IV)", type:"mc", opts:["They produce too much food","The artificial lighting uses a lot of electricity","They take up too much space","They only work in warm climates"], ans:1, explain:"Paragraph IV says critics raise concerns about environmental impact because the artificial lighting in indoor farms consumes a great deal of electricity."},
+      {q:"What does the expert mean by 'make cities smarter, greener, and more self-sufficient'? (paragraph V)", type:"mc", opts:["Cities should build more parks","Cities should reduce their dependence on outside food sources","Cities should stop using electricity","Cities should move back to traditional farming"], ans:1, explain:"The expert means urban farming helps cities rely less on food from far away, making them more independent and environmentally friendly."},
+    ]
+  },
+  {
+    title: "The history of chocolate",
+    text: `<p><strong>I</strong> &nbsp;Today, chocolate is one of the most popular foods in the world. But its history stretches back more than 3,000 years to the ancient civilisations of Central America. The Maya and Aztec peoples used cacao beans — the seeds of the cacao tree — to make a bitter, spicy drink that was very different from the sweet chocolate we know today. This drink was considered so valuable that cacao beans were even used as a form of currency.</p>
+<p><strong>II</strong> &nbsp;When Spanish explorers arrived in the Americas in the sixteenth century, they encountered this mysterious drink and brought cacao beans back to Europe. At first, Europeans also consumed it as a drink, but they added sugar and removed the spices to suit their own tastes. By the seventeenth century, chocolate houses — similar to today's coffee shops — had become fashionable meeting places in cities like London and Paris.</p>
+<p><strong>III</strong> &nbsp;The transformation of chocolate from liquid to solid form came in the nineteenth century, when manufacturers discovered how to extract cocoa butter from cacao and mix it with sugar and milk to create solid bars. This made chocolate cheaper and easier to transport and store. Mass production made it available to ordinary people for the first time, and demand grew rapidly across Europe and North America.</p>
+<p><strong>IV</strong> &nbsp;Today, the chocolate industry is worth billions of dollars, but it faces serious challenges. Most of the world's cacao is grown in West Africa, where farmers often receive very little money for their work. Reports of child labour on some cacao farms have led to calls for greater regulation and for consumers to choose fairly traded chocolate. Climate change is also threatening cacao crops, as the trees require specific conditions of temperature and rainfall to grow well.</p>
+<p><strong>V</strong> &nbsp;Despite these concerns, global demand for chocolate continues to rise, particularly in emerging markets in Asia. Researchers are working to develop new varieties of cacao tree that are more resistant to disease and climate change, in the hope of securing the future of this beloved food.</p>`,
+    qs: [
+      {q:"What do we learn about how the Maya and Aztecs used cacao? (paragraph I)", type:"mc", opts:["They ate it as a solid food","They used it to make a sweet drink","They used it as a form of currency and to make a bitter drink","They traded it with European explorers"], ans:2, explain:"Paragraph I says cacao beans were used to make a bitter, spicy drink AND were used as a form of currency."},
+      {q:"How did Europeans change the chocolate drink? (paragraph II) COMPLETE THE SENTENCE: They added ...", type:"mc", opts:["spices and cacao butter","sugar and removed the spices","milk and cacao beans","flavours and more water"], ans:1, explain:"Paragraph II says Europeans added sugar and removed the spices to suit their own tastes."},
+      {q:"What made chocolate available to ordinary people? (paragraph III)", type:"mc", opts:["Spanish explorers brought it to Europe","The discovery of cacao trees in Africa","Mass production made it cheaper and easier to transport","Chocolate houses became fashionable"], ans:2, explain:"Paragraph III explains that mass production made chocolate cheaper and easier to transport and store, making it available to ordinary people for the first time."},
+      {q:"What challenges does the chocolate industry face today? (paragraph IV) PUT A ✓ BY THE TWO CORRECT ANSWERS.", type:"multi2", opts:["Farmers in West Africa receive very little money","There is not enough demand for chocolate","Climate change is threatening cacao crops","Chocolate is too expensive to produce"], ans:[0,2], explain:"Paragraph IV mentions that farmers receive very little money AND that climate change is threatening cacao crops as two major challenges."},
+      {q:"What are researchers trying to do to protect chocolate's future? (paragraph V)", type:"mc", opts:["Stop growing cacao in Africa","Develop cacao trees more resistant to disease and climate change","Reduce global demand for chocolate","Find a cheaper replacement for cacao"], ans:1, explain:"Paragraph V says researchers are working to develop new varieties of cacao tree that are more resistant to disease and climate change."},
+    ]
+  },
+  {
+    title: "Left-handed people",
+    text: `<p><strong>I</strong> &nbsp;Approximately ten percent of the world's population is left-handed. For most of human history, left-handed people were treated with suspicion. In many cultures, the left hand was considered unlucky or even evil. Children who showed a preference for their left hand were often forced to use their right hand instead. This practice has now largely disappeared, but its effects can still be seen in language: in English, the word "sinister" comes from the Latin word for "left".</p>
+<p><strong>II</strong> &nbsp;Scientists are still not entirely sure why some people are left-handed. Research suggests that handedness is partly determined by genetics — it tends to run in families — but the relationship is complex. If both parents are left-handed, their children are more likely to be left-handed too, but it is not guaranteed. Environmental factors during pregnancy may also play a role.</p>
+<p><strong>III</strong> &nbsp;Left-handed people often face practical challenges in a world designed for right-handers. Everyday objects such as scissors, computer mice, and even musical instruments like guitars are typically built for right-handed use. Left-handed students sometimes struggle with writing because their hand moves over what they have just written, smudging the ink. Some schools now provide special desks and materials for left-handed pupils.</p>
+<p><strong>IV</strong> &nbsp;Despite these difficulties, there is evidence that left-handed people may have certain advantages. Some studies suggest that left-handers tend to perform better in tasks that require creative thinking, as they may use both sides of the brain more equally. Left-handed athletes are also considered to have an advantage in sports such as tennis and fencing, because their opponents are less used to playing against them.</p>
+<p><strong>V</strong> &nbsp;Famous left-handers include Leonardo da Vinci, Beethoven, and several world leaders. While being left-handed was once seen as a disadvantage, today many left-handed people wear it as a badge of pride. Every year on August 13th, the world celebrates International Left-Handers Day to raise awareness of the challenges and strengths of left-handed people.</p>`,
+    qs: [
+      {q:"What do we learn about left-handed people in history? (paragraph I)", type:"mc", opts:["They were considered lucky in most cultures","They were treated with suspicion and forced to use their right hand","They made up half of the population","They had their own special language"], ans:1, explain:"Paragraph I says left-handed people were treated with suspicion and children showing preference for the left hand were often forced to use their right."},
+      {q:"What does research say about the cause of left-handedness? (paragraph II)", type:"mc", opts:["It is caused entirely by genetics","It is caused entirely by environmental factors","It is partly genetic but also influenced by other factors","It is randomly distributed in the population"], ans:2, explain:"Paragraph II says handedness is partly determined by genetics but the relationship is complex, and environmental factors may also play a role."},
+      {q:"What practical challenge do left-handed students face when writing? (paragraph III)", type:"mc", opts:["They cannot hold a pencil correctly","Their hand moves over what they have written, smudging the ink","Left-handed notebooks are too expensive","They write more slowly than right-handers"], ans:1, explain:"Paragraph III explains that left-handed students struggle because their hand moves over what they have just written, smudging the ink."},
+      {q:"What possible advantages do left-handed people have? (paragraph IV) PUT A ✓ BY THE TWO CORRECT ANSWERS.", type:"multi2", opts:["They may be better at creative thinking tasks","They are always better at sports","They may have an advantage in sports like tennis","They can write more quickly"], ans:[0,2], explain:"Paragraph IV mentions both an advantage in creative thinking tasks AND an advantage in sports like tennis and fencing."},
+      {q:"What does 'wear it as a badge of pride' mean in paragraph V?", type:"mc", opts:["Left-handers wear a special badge","Left-handers are embarrassed by being left-handed","Left-handers feel proud of being left-handed","Left-handers hide the fact that they are left-handed"], ans:2, explain:"The expression 'wear it as a badge of pride' means to feel proud of something rather than being ashamed of it."},
+    ]
+  },
+  {
+    title: "Working from home",
+    text: `<p><strong>I</strong> &nbsp;Before 2020, working from home was relatively uncommon. Most employees were expected to commute to an office five days a week, and remote work was seen as a privilege available only to a small number of professionals. All of that changed dramatically when the global health crisis of 2020 forced millions of workers to stay at home. Overnight, organisations that had previously resisted remote work were required to adapt.</p>
+<p><strong>II</strong> &nbsp;Many workers discovered unexpected benefits. Without a daily commute, they saved both time and money. Being at home made it easier to fit personal responsibilities around work, such as caring for children or elderly relatives. Surveys conducted during this period found that a significant proportion of workers reported higher levels of satisfaction and productivity when working from home.</p>
+<p><strong>III</strong> &nbsp;However, not everyone found the experience positive. For some workers, particularly those in smaller homes or with young children, it was difficult to find a quiet space to concentrate. The boundary between work and personal life became blurred, with many employees finding it hard to "switch off" at the end of the day. Social isolation was also a significant concern, as the informal conversations and connections that take place naturally in an office environment were lost.</p>
+<p><strong>IV</strong> &nbsp;As the situation returned to normal, many companies adopted a "hybrid" model, in which employees split their time between the office and home. This approach aimed to combine the flexibility of remote work with the social and creative benefits of working together in person. However, opinions on the ideal balance remain divided. Some employees prefer to be in the office most of the time, while others strongly prefer working remotely.</p>
+<p><strong>V</strong> &nbsp;The long-term effects of this shift in working patterns are still unclear. What seems certain is that the traditional expectation of working in an office from nine to five, five days a week, will never fully return. As one business leader observed: "The way we work has changed permanently. The challenge now is to make the best of that change."</p>`,
+    qs: [
+      {q:"What was the situation before 2020? (paragraph I)", type:"mc", opts:["Most workers already worked from home","Remote work was very common","Working from home was seen as a privilege for a small number","Companies supported remote work widely"], ans:2, explain:"Paragraph I says before 2020, remote work was seen as a privilege available only to a small number of professionals."},
+      {q:"What benefits did workers discover when working from home? (paragraph II) PUT A ✓ BY THE TWO CORRECT ANSWERS.", type:"multi2", opts:["They saved time and money without commuting","They earned higher salaries","Many reported higher satisfaction and productivity","They worked fewer hours"], ans:[0,2], explain:"Paragraph II mentions saving time and money from no commute AND higher levels of satisfaction and productivity as benefits."},
+      {q:"What problem did some workers face at home? (paragraph III)", type:"mc", opts:["They had too much free time","It was difficult to find a quiet space to concentrate","Their internet connections were too slow","They could not communicate with colleagues"], ans:1, explain:"Paragraph III says particularly workers in smaller homes found it difficult to find a quiet space to concentrate."},
+      {q:"What is the 'hybrid' model mentioned in paragraph IV?", type:"mc", opts:["Working only from home","Working only in the office","Splitting time between the office and home","A new type of office design"], ans:2, explain:"Paragraph IV explains the hybrid model as one where employees split their time between the office and home."},
+      {q:"What does the business leader mean by 'The way we work has changed permanently'? (paragraph V)", type:"mc", opts:["Everyone will now work from home forever","Office work will return to exactly how it was","Working patterns will never fully go back to how they were before","Only young workers will continue to work remotely"], ans:2, explain:"The leader means that the changes in working patterns brought about by the crisis will not be completely reversed — work will never be exactly as it was before."},
+    ]
+  },
+  {
+    title: "The importance of bees",
+    text: `<p><strong>I</strong> &nbsp;Bees are among the most important creatures on Earth. As pollinators, they play a vital role in the reproduction of flowering plants. When a bee visits a flower to collect nectar, it picks up tiny grains of pollen on its body. As it moves from flower to flower, this pollen is transferred, allowing plants to produce seeds and fruit. It is estimated that bees are responsible for pollinating about one third of all the food that humans eat.</p>
+<p><strong>II</strong> &nbsp;Despite their importance, bee populations around the world have been declining at an alarming rate. Scientists have identified several causes. The widespread use of pesticides in modern farming kills not only harmful insects but also bees. The destruction of natural habitats, such as wildflower meadows, removes the sources of food that bees depend on. Climate change is also disrupting the timing of flowering plants, meaning that bees sometimes arrive at flowers before or after the nectar is available.</p>
+<p><strong>III</strong> &nbsp;The loss of bees would have serious consequences for agriculture and food security. Without sufficient pollination, the production of many fruits, vegetables, and nuts would decrease dramatically. Some economists have estimated the value of bee pollination to global agriculture at hundreds of billions of dollars per year. Several countries have already begun to see reduced harvests of certain crops as bee populations fall.</p>
+<p><strong>IV</strong> &nbsp;In response to this crisis, governments and conservation organisations have introduced a range of measures. Some countries have banned or restricted the use of certain pesticides that are known to harm bees. Many cities have created "bee corridors" — connected green spaces where wildflowers grow — to give bees safe routes through urban areas. Beekeeping has also grown in popularity, with urban beehives appearing on rooftops across the world.</p>
+<p><strong>V</strong> &nbsp;Individuals can also contribute to protecting bees. Planting bee-friendly flowers, avoiding pesticides in gardens, and buying locally produced honey all help to support bee populations. As one conservation expert explained: "We do not need to wait for governments to act. Every garden, every balcony, and every window box can make a difference."</p>`,
+    qs: [
+      {q:"Why are bees important? (paragraph I)", type:"mc", opts:["They produce all the world's honey","They pollinate about one third of all the food humans eat","They protect flowers from harmful insects","They carry water to plants in dry areas"], ans:1, explain:"Paragraph I says bees are responsible for pollinating about one third of all the food that humans eat."},
+      {q:"What are TWO reasons bee populations are declining? (paragraph II) PUT A ✓ BY THE TWO CORRECT ANSWERS.", type:"multi2", opts:["Pesticides used in farming kill bees","Bees are being over-harvested for honey","The destruction of natural habitats removes bees' food","Bees are being moved to cities"], ans:[0,2], explain:"Paragraph II identifies pesticide use AND the destruction of natural habitats as two main causes of declining bee populations."},
+      {q:"What would happen if bees disappeared? (paragraph III)", type:"mc", opts:["Food would become cheaper","The production of many fruits and vegetables would decrease","Farmers would find new ways to grow food easily","Climate change would slow down"], ans:1, explain:"Paragraph III says without sufficient pollination, the production of many fruits, vegetables, and nuts would decrease dramatically."},
+      {q:"What are 'bee corridors'? (paragraph IV)", type:"mc", opts:["Tunnels built for bees under roads","Connected green spaces where wildflowers grow","Special lanes for beekeepers","Areas where bees are kept away from the public"], ans:1, explain:"Paragraph IV explains that bee corridors are connected green spaces where wildflowers grow, giving bees safe routes through urban areas."},
+      {q:"What does the expert mean when she says 'Every garden, every balcony, and every window box can make a difference'? (paragraph V)", type:"mc", opts:["Only large gardens are useful for bees","Governments must build more parks","Even small individual actions can help protect bees","Window boxes are the best way to help bees"], ans:2, explain:"The expert means that even very small planting spaces — not just large gardens — can contribute to supporting bee populations."},
+    ]
+  },
+  {
+    title: "Social media and young people",
+    text: `<p><strong>I</strong> &nbsp;Social media platforms have transformed the way young people communicate, consume information, and present themselves to the world. Teenagers today spend an average of three to four hours per day on platforms such as Instagram, TikTok, and YouTube. While these tools offer genuine benefits — staying in touch with friends, discovering new interests, and building communities — researchers and parents have raised concerns about their impact on mental health and wellbeing.</p>
+<p><strong>II</strong> &nbsp;One area of concern is the effect of social media on self-image. Many platforms are built around sharing photographs and videos, encouraging users to present the best version of themselves. When young people constantly see images of others looking attractive, successful, or happy, they may feel inadequate by comparison. Studies have found a link between heavy social media use and increased levels of anxiety and low self-esteem, particularly among teenage girls.</p>
+<p><strong>III</strong> &nbsp;Sleep is another area affected by social media use. Many young people check their phones late at night, and the blue light emitted by screens disrupts the production of melatonin, a hormone that helps the body prepare for sleep. Research has shown that teenagers who use social media heavily at night tend to sleep less and report poorer quality sleep than those who do not. Poor sleep, in turn, affects concentration, mood, and academic performance.</p>
+<p><strong>IV</strong> &nbsp;Some countries have begun to take action. Australia has introduced a law banning children under the age of sixteen from using social media platforms. In the United Kingdom, the government has given regulators new powers to fine companies whose platforms cause harm to children. Several schools have introduced total bans on mobile phones during the school day to help students focus on learning.</p>
+<p><strong>V</strong> &nbsp;Many experts argue that the responsibility should not fall entirely on young people themselves. Social media companies design their platforms to be as addictive as possible, using algorithms that keep users scrolling for as long as possible. As one researcher put it: "Telling a teenager to simply use their phone less is like telling someone to eat less in a world full of fast food restaurants. The environment itself needs to change."</p>`,
+    qs: [
+      {q:"What do we learn about how teenagers use social media? (paragraph I)", type:"mc", opts:["They use it only to communicate with family","They spend an average of three to four hours per day on it","They mainly use it for school projects","They prefer older platforms like Facebook"], ans:1, explain:"Paragraph I states that teenagers today spend an average of three to four hours per day on social media platforms."},
+      {q:"How does social media affect self-image? (paragraph II)", type:"mc", opts:["It helps young people feel more confident","It has no effect on how young people feel about themselves","It may make young people feel inadequate by comparison to others","It encourages young people to avoid photographs"], ans:2, explain:"Paragraph II says when young people constantly see images of others looking attractive and successful, they may feel inadequate by comparison."},
+      {q:"Why does late-night social media use affect sleep? (paragraph III) PUT A ✓ BY THE TWO CORRECT ANSWERS.", type:"multi2", opts:["Blue light from screens disrupts melatonin production","Social media is too exciting to stop watching","Teenagers who use social media at night sleep less","Social media causes bad dreams"], ans:[0,2], explain:"Paragraph III explains that blue light disrupts melatonin production AND that teenagers who use social media heavily at night sleep less."},
+      {q:"What action has Australia taken? (paragraph IV)", type:"mc", opts:["Banned all mobile phones","Required social media companies to pay a fee","Banned children under sixteen from using social media","Made social media classes compulsory in schools"], ans:2, explain:"Paragraph IV states that Australia introduced a law banning children under the age of sixteen from using social media platforms."},
+      {q:"What does the researcher mean by comparing social media to a 'world full of fast food restaurants'? (paragraph V)", type:"mc", opts:["Social media makes people hungry","Young people need to show more self-control","The environment itself is designed to encourage addictive behaviour, so individual willpower is not enough","Fast food and social media are equally harmful"], ans:2, explain:"The researcher means that just as it's hard to avoid fast food when it's everywhere, it's unfair to expect young people to resist social media that is deliberately designed to be addictive — the system itself needs to change."},
+    ]
+  },
+  {
+    title: "The Amazon rainforest",
+    text: `<p><strong>I</strong> &nbsp;The Amazon rainforest is the largest tropical forest on Earth. It covers an area of approximately 5.5 million square kilometres, spreading across nine countries in South America, with the majority located in Brazil. The Amazon is home to an extraordinary variety of life: it contains around ten percent of all the species of plants and animals in the world. Scientists believe that there are still millions of species in the Amazon that have not yet been discovered or named.</p>
+<p><strong>II</strong> &nbsp;The Amazon plays a vital role in regulating the global climate. Its trees absorb enormous quantities of carbon dioxide from the atmosphere, helping to slow the pace of climate change. The forest also releases vast amounts of water vapour into the air, influencing rainfall patterns far beyond its own borders. Some scientists describe the Amazon as the "lungs of the Earth", though others argue this comparison is not entirely accurate.</p>
+<p><strong>III</strong> &nbsp;Despite its importance, the Amazon has been shrinking at an alarming rate. Deforestation — the clearing of trees for farming, cattle ranching, and mining — has destroyed approximately twenty percent of the original forest over the past fifty years. When trees are cut down or burned, the carbon stored in them is released back into the atmosphere, making deforestation a major contributor to global warming.</p>
+<p><strong>IV</strong> &nbsp;Indigenous communities have lived in the Amazon for thousands of years. They possess detailed knowledge of the forest's plants and animals, and many scientists believe that protecting indigenous land rights is one of the most effective strategies for conserving the rainforest. Studies have shown that areas of the Amazon under indigenous control tend to have lower rates of deforestation than other areas.</p>
+<p><strong>V</strong> &nbsp;International efforts to protect the Amazon have had mixed results. Some countries have introduced laws to reduce deforestation, and satellite technology now allows authorities to detect illegal clearing in remote areas. However, enforcement remains difficult, and economic pressures on local communities continue to drive deforestation. Many environmentalists argue that wealthy nations, which have historically caused most of the world's carbon emissions, have a responsibility to help fund the protection of forests like the Amazon.</p>`,
+    qs: [
+      {q:"What do we learn about the Amazon rainforest in paragraph I?", type:"mc", opts:["It is located entirely in Brazil","It contains about ten percent of all species of plants and animals on Earth","It has been fully explored by scientists","It covers most of South America"], ans:1, explain:"Paragraph I states the Amazon contains around ten percent of all the species of plants and animals in the world."},
+      {q:"Why is the Amazon described as the 'lungs of the Earth'? (paragraph II)", type:"mc", opts:["Because it produces oxygen for all animals to breathe","Because it absorbs carbon dioxide and releases water vapour, regulating climate","Because it is located in the centre of the planet","Because it contains the world's largest rivers"], ans:1, explain:"Paragraph II explains the Amazon absorbs carbon dioxide and releases water vapour, influencing climate — which is why it is called the 'lungs of the Earth'."},
+      {q:"What are TWO causes of Amazon deforestation? (paragraph III) PUT A ✓ BY THE TWO CORRECT ANSWERS.", type:"multi2", opts:["Farming and cattle ranching","Tourism and photography","Mining","Natural flooding"], ans:[0,2], explain:"Paragraph III identifies farming, cattle ranching, and mining as causes — farming/cattle ranching and mining are two of them."},
+      {q:"Why is protecting indigenous land rights important for the Amazon? (paragraph IV)", type:"mc", opts:["Indigenous people own all the trees in the Amazon","Indigenous-controlled areas tend to have lower rates of deforestation","Indigenous communities want to sell the land to developers","Indigenous people discovered most of the Amazon's species"], ans:1, explain:"Paragraph IV explains that studies show areas of the Amazon under indigenous control tend to have lower rates of deforestation."},
+      {q:"What do many environmentalists argue about wealthy nations? (paragraph V)", type:"mc", opts:["They should stop producing carbon emissions immediately","They should not interfere in South American politics","They have a responsibility to help fund forest protection","They cause less damage to forests than poor countries"], ans:2, explain:"Paragraph V states that many environmentalists argue wealthy nations have a responsibility to help fund the protection of forests like the Amazon."},
+    ]
+  },
+];
+
+// ═══════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════
+
+function loadData() { return {}; }
+function saveData(d) { /* in-memory only — works on iPhone */ }
+
+let DB = loadData();
+if (!DB.history) DB.history = [];
+if (!DB.missCount) DB.missCount = {};
+if (!DB.lastDate) DB.lastDate = '';
+if (!DB.streak) DB.streak = 0;
+
+function recordScore(type, list, score, total) {
+  DB.history.unshift({ type, list, score, total, date: new Date().toLocaleDateString() });
+  if (DB.history.length > 50) DB.history = DB.history.slice(0, 50);
+  const today = new Date().toDateString();
+  if (DB.lastDate !== today) {
+    if (DB.lastDate === new Date(Date.now() - 86400000).toDateString()) DB.streak++;
+    else DB.streak = 1;
+    DB.lastDate = today;
+  }
+  saveData(DB);
+}
+
+function recordMiss(word) {
+  DB.missCount[word] = (DB.missCount[word] || 0) + 1;
+  saveData(DB);
+}
+
+function recordHit(word) {
+  if (DB.missCount[word] && DB.missCount[word] > 0) {
+    DB.missCount[word] = Math.max(0, DB.missCount[word] - 1);
+    if (DB.missCount[word] === 0) delete DB.missCount[word];
+    saveData(DB);
+  }
+}
+
+function getWeakWords() {
+  return Object.entries(DB.missCount)
+    .filter(([,v]) => v > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 20)
+    .map(([w, c]) => {
+      const entry = [...VOCAB_A, ...VOCAB_B].find(x => x.w === w);
+      return { word: w, count: c, meaning: entry ? entry.m : '' };
+    });
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILITY
+// ═══════════════════════════════════════════════════════
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+function $(id) { return document.getElementById(id); }
+
+function switchTab(name) {
+  ['home','vocab','reading','flash','progress'].forEach(t => {
+    $('tab-'+t).classList.add('hidden');
+    document.querySelectorAll('.tab').forEach((el, i) => {
+      el.classList.remove('active');
+    });
+  });
+  $('tab-'+name).classList.remove('hidden');
+  const tabs = ['home','vocab','reading','flash','progress'];
+  document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
+  if (name === 'home') refreshHome();
+  if (name === 'progress') refreshProgress();
+  if (name === 'reading') showReadingMenu();
+  if (name === 'vocab') showVocabMenu();
+  if (name === 'flash') { $('flash-menu').classList.remove('hidden'); $('flash-active').classList.add('hidden'); }
+}
+
+// ═══════════════════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════════════════
+
+function refreshHome() {
+  const total = DB.history.length;
+  $('hs-total').textContent = total;
+  $('hs-streak').textContent = DB.streak;
+  if (total > 0) {
+    $('home-stats').classList.remove('hidden');
+    const best = Math.max(...DB.history.map(h => Math.round(h.score/h.total*100)));
+    $('hs-best').textContent = best + '%';
+  }
+  const weak = getWeakWords().slice(0, 5);
+  if (weak.length > 0) {
+    $('home-weak-section').classList.remove('hidden');
+    $('home-weak-list').innerHTML = weak.map(w =>
+      `<div class="weak-word"><div><div class="ww">${w.word}</div><div class="wm">${w.meaning}</div></div><span class="miss-badge">missed ${w.count}×</span></div>`
+    ).join('');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// VOCABULARY QUIZ
+// ═══════════════════════════════════════════════════════
+
+let vQuestions = [], vIdx = 0, vScore = 0, lastVocabList = 'AB';
+
+function showVocabMenu() {
+  $('vocab-menu').classList.remove('hidden');
+  $('vocab-quiz').classList.add('hidden');
+  $('vocab-done').classList.add('hidden');
+}
+
+function getPool(list) {
+  if (list === 'A') return VOCAB_A;
+  if (list === 'B') return VOCAB_B;
+  return [...VOCAB_A, ...VOCAB_B];
+}
+
+function startVocab(list) {
+  lastVocabList = list;
+  const allPool = [...VOCAB_A, ...VOCAB_B];
+  const pool = shuffle(getPool(list)).slice(0, 12);
+  vQuestions = pool.map(item => {
+    const distractors = shuffle(allPool.filter(x => x.m !== item.m)).slice(0, 3).map(x => x.m);
+    return { word: item.w, pos: item.pos || '', fam: item.fam || '', correct: item.m, opts: shuffle([item.m, ...distractors]) };
+  });
+  vIdx = 0; vScore = 0;
+  $('vocab-menu').classList.add('hidden');
+  $('vocab-done').classList.add('hidden');
+  $('vocab-quiz').classList.remove('hidden');
+  renderVocab();
+}
+
+function startWeakQuiz() {
+  const weak = getWeakWords();
+  if (weak.length === 0) { alert('No weak words yet! Complete some quizzes first.'); return; }
+  const allPool = [...VOCAB_A, ...VOCAB_B];
+  lastVocabList = 'WEAK';
+  const pool = shuffle(weak.map(w => allPool.find(x => x.w === w.word)).filter(Boolean)).slice(0, 12);
+  vQuestions = pool.map(item => {
+    const distractors = shuffle(allPool.filter(x => x.m !== item.m)).slice(0, 3).map(x => x.m);
+    return { word: item.w, pos: item.pos || '', fam: item.fam || '', correct: item.m, opts: shuffle([item.m, ...distractors]) };
+  });
+  vIdx = 0; vScore = 0;
+  $('vocab-menu').classList.add('hidden');
+  $('vocab-done').classList.add('hidden');
+  $('vocab-quiz').classList.remove('hidden');
+  renderVocab();
+}
+
+function renderVocab() {
+  const q = vQuestions[vIdx];
+  const pct = Math.round(vIdx / vQuestions.length * 100);
+  $('vq-bar').style.width = pct + '%';
+  $('vq-label').textContent = 'Question ' + (vIdx + 1) + ' of ' + vQuestions.length;
+  $('vq-score-live').textContent = 'Score: ' + vScore + '/' + vIdx;
+  $('vq-list-tag').textContent = lastVocabList === 'A' ? 'List A' : lastVocabList === 'B' ? 'List B' : lastVocabList === 'WEAK' ? 'Weak words' : 'Lists A + B';
+  $('vq-word').textContent = q.word;
+  $('vq-pos').textContent = q.pos + (q.fam ? ' · ' + q.fam : '');
+  const opts = $('vq-opts');
+  opts.innerHTML = '';
+  q.opts.forEach(o => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.textContent = o;
+    btn.onclick = () => answerVocab(o, btn, q.correct, q.word);
+    opts.appendChild(btn);
+  });
+  $('vq-feedback').className = 'feedback';
+  $('vq-feedback').textContent = '';
+  $('vq-next').classList.add('hidden');
+}
+
+function answerVocab(chosen, el, correct, word) {
+  $('vq-opts').querySelectorAll('.opt').forEach(b => { b.onclick = null; b.classList.add('locked'); });
+  const fb = $('vq-feedback');
+  if (chosen === correct) {
+    vScore++;
+    el.classList.add('correct');
+    fb.textContent = '✓ Correct!';
+    fb.className = 'feedback correct show';
+    recordHit(word);
+  } else {
+    el.classList.add('wrong');
+    $('vq-opts').querySelectorAll('.opt').forEach(b => { if (b.textContent === correct) b.classList.add('correct'); });
+    fb.textContent = '✗ Correct answer: ' + correct;
+    fb.className = 'feedback wrong show';
+    recordMiss(word);
+  }
+  $('vq-score-live').textContent = 'Score: ' + vScore + '/' + (vIdx + 1);
+  $('vq-next').classList.remove('hidden');
+}
+
+function nextVocab() {
+  vIdx++;
+  if (vIdx >= vQuestions.length) {
+    recordScore('vocab', lastVocabList, vScore, vQuestions.length);
+    $('vocab-quiz').classList.add('hidden');
+    $('vocab-done').classList.remove('hidden');
+    const pct = Math.round(vScore / vQuestions.length * 100);
+    $('vd-num').textContent = vScore;
+    $('vd-den').textContent = '/' + vQuestions.length;
+    $('vd-title').textContent = pct >= 90 ? 'Excellent! 🎉' : pct >= 70 ? 'Good work!' : pct >= 50 ? 'Keep practising' : 'Review these words';
+    $('vd-sub').textContent = pct + '% correct · ' + (pct >= 70 ? 'You\'re on track for the exam!' : 'Focus on the words you missed.');
+  } else { renderVocab(); }
+}
+
+// ═══════════════════════════════════════════════════════
+// READING
+// ═══════════════════════════════════════════════════════
+
+let currentReadingIdx = 0, rIdx = 0, rScore = 0, rQuestions = [];
+
+function showReadingMenu() {
+  $('reading-menu').classList.remove('hidden');
+  $('reading-passage').classList.add('hidden');
+  $('reading-qs').classList.add('hidden');
+  $('reading-done').classList.add('hidden');
+  const list = $('reading-passage-list');
+  list.innerHTML = PASSAGES.map((p, i) =>
+    `<div class="mode-card" style="text-align:left;margin-bottom:8px;display:flex;align-items:center;gap:12px" onclick="readPassage(${i})">
+      <div style="font-size:20px">📄</div>
+      <div><h3 style="font-size:14px">${p.title}</h3><p style="font-size:12px;color:var(--ink3)">5 questions · Reading comprehension</p></div>
+    </div>`
+  ).join('');
+}
+
+function pickRandomReading() {
+  readPassage(Math.floor(Math.random() * PASSAGES.length));
+}
+
+function readPassage(idx) {
+  currentReadingIdx = idx;
+  $('reading-menu').classList.add('hidden');
+  $('reading-passage').classList.remove('hidden');
+  $('rp-title').textContent = PASSAGES[idx].title;
+  $('rp-body').innerHTML = PASSAGES[idx].text;
+}
+
+function startReadingQs() {
+  rIdx = 0; rScore = 0;
+  rQuestions = PASSAGES[currentReadingIdx].qs;
+  $('reading-passage').classList.add('hidden');
+  $('reading-qs').classList.remove('hidden');
+  renderReading();
+}
+
+function renderReading() {
+  const q = rQuestions[rIdx];
+  const pct = Math.round(rIdx / rQuestions.length * 100);
+  $('rq-bar').style.width = pct + '%';
+  $('rq-label').textContent = 'Question ' + (rIdx + 1) + ' of ' + rQuestions.length;
+  $('rq-score-live').textContent = 'Score: ' + rScore + '/' + rIdx;
+  $('rq-type-tag').textContent = q.type === 'multi2' ? 'Choose two correct answers' : 'Reading comprehension';
+  $('rq-question').textContent = q.q;
+  $('rq-instruction').textContent = '';
+
+  const opts = $('rq-opts');
+  opts.innerHTML = '';
+  $('rq-feedback').className = 'feedback';
+  $('rq-next').classList.add('hidden');
+
+  if (q.type === 'mc') {
+    q.opts.forEach((o, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt';
+      btn.textContent = '(' + (i+1) + ') ' + o;
+      btn.onclick = () => answerReading(i, btn);
+      opts.appendChild(btn);
+    });
+  } else if (q.type === 'multi2') {
+    $('rq-instruction').textContent = 'Select exactly 2 answers, then press Check.';
+    const selected = new Set();
+    q.opts.forEach((o, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt';
+      btn.textContent = o;
+      btn.dataset.idx = i;
+      btn.onclick = () => {
+        if (selected.has(i)) { selected.delete(i); btn.style.borderColor = ''; btn.style.background = ''; }
+        else if (selected.size < 2) { selected.add(i); btn.style.borderColor = 'var(--accent)'; btn.style.background = 'var(--accent-bg)'; }
+        checkBtn.disabled = selected.size !== 2;
+      };
+      opts.appendChild(btn);
+    });
+    const checkBtn = document.createElement('button');
+    checkBtn.className = 'btn btn-primary mt8';
+    checkBtn.textContent = 'Check answers';
+    checkBtn.disabled = true;
+    checkBtn.onclick = () => answerMulti2([...selected], q.ans, q.explain, q.opts);
+    opts.appendChild(checkBtn);
+  }
+}
+
+function answerReading(chosen, el) {
+  const q = rQuestions[rIdx];
+  $('rq-opts').querySelectorAll('.opt').forEach(b => { b.onclick = null; b.classList.add('locked'); });
+  const fb = $('rq-feedback');
+  if (chosen === q.ans) {
+    rScore++; el.classList.add('correct');
+    fb.textContent = '✓ Correct! ' + q.explain;
+    fb.className = 'feedback correct show';
+  } else {
+    el.classList.add('wrong');
+    $('rq-opts').querySelectorAll('.opt')[q.ans].classList.add('correct');
+    fb.textContent = '✗ ' + q.explain;
+    fb.className = 'feedback wrong show';
+  }
+  $('rq-score-live').textContent = 'Score: ' + rScore + '/' + (rIdx + 1);
+  $('rq-next').classList.remove('hidden');
+}
+
+function answerMulti2(chosen, correct, explain, opts) {
+  $('rq-opts').querySelectorAll('.opt').forEach(b => { b.onclick = null; b.classList.add('locked'); });
+  $('rq-opts').querySelectorAll('button.btn').forEach(b => b.remove());
+  const allCorrect = chosen.length === correct.length && chosen.every(c => correct.includes(c));
+  $('rq-opts').querySelectorAll('.opt').forEach((b, i) => {
+    if (correct.includes(i)) b.classList.add('correct');
+    else if (chosen.includes(i)) b.classList.add('wrong');
+    b.style.borderColor = ''; b.style.background = '';
+  });
+  const fb = $('rq-feedback');
+  if (allCorrect) {
+    rScore++;
+    fb.textContent = '✓ Correct! ' + explain;
+    fb.className = 'feedback correct show';
+  } else {
+    fb.textContent = '✗ ' + explain;
+    fb.className = 'feedback wrong show';
+  }
+  $('rq-score-live').textContent = 'Score: ' + rScore + '/' + (rIdx + 1);
+  $('rq-next').classList.remove('hidden');
+}
+
+function nextReading() {
+  rIdx++;
+  if (rIdx >= rQuestions.length) {
+    recordScore('reading', PASSAGES[currentReadingIdx].title, rScore, rQuestions.length);
+    $('reading-qs').classList.add('hidden');
+    $('reading-done').classList.remove('hidden');
+    const pct = Math.round(rScore / rQuestions.length * 100);
+    $('rd-num').textContent = rScore;
+    $('rd-den').textContent = '/' + rQuestions.length;
+    $('rd-title').textContent = pct >= 80 ? 'Great reading! 🎉' : pct >= 60 ? 'Good effort!' : 'Keep practising';
+    $('rd-sub').textContent = pct + '% correct · ' + PASSAGES[currentReadingIdx].title;
+  } else { renderReading(); }
+}
+
+// ═══════════════════════════════════════════════════════
+// FLASHCARDS
+// ═══════════════════════════════════════════════════════
+
+let fCards = [], fIdx = 0, fFlipped = false, fDeckName = '';
+
+function initFlash(list) {
+  if (list === 'WEAK') {
+    const weak = getWeakWords();
+    if (weak.length === 0) { alert('No weak words yet!'); return; }
+    const allPool = [...VOCAB_A, ...VOCAB_B];
+    fCards = shuffle(weak.map(w => allPool.find(x => x.w === w.word)).filter(Boolean));
+    fDeckName = 'Weak words';
+  } else {
+    fCards = shuffle(getPool(list));
+    fDeckName = list === 'A' ? 'List A' : list === 'B' ? 'List B' : 'Lists A + B';
+  }
+  fIdx = 0; fFlipped = false;
+  $('flash-menu').classList.add('hidden');
+  $('flash-active').classList.remove('hidden');
+  renderFlash();
+}
+
+function renderFlash() {
+  if (!fCards.length) return;
+  const c = fCards[fIdx];
+  $('fc-bar').style.width = Math.round((fIdx + 1) / fCards.length * 100) + '%';
+  $('fc-counter').textContent = (fIdx + 1) + ' / ' + fCards.length;
+  $('fc-deck-name').textContent = fDeckName;
+  $('fc-word').textContent = c.w;
+  $('fc-meta').textContent = c.pos + (c.fam ? ' · ' + c.fam : '');
+  $('fc-meaning').textContent = c.m;
+  $('fc-meaning').classList.remove('show');
+  $('fc-tap').textContent = 'Tap to reveal meaning';
+  fFlipped = false;
+}
+
+function flipCard() {
+  if (!fCards.length) return;
+  fFlipped = !fFlipped;
+  if (fFlipped) {
+    $('fc-meaning').classList.add('show');
+    $('fc-tap').textContent = 'Tap to hide';
+  } else {
+    $('fc-meaning').classList.remove('show');
+    $('fc-tap').textContent = 'Tap to reveal meaning';
+  }
+}
+
+function nextCard() { if (fCards.length && fIdx < fCards.length - 1) { fIdx++; renderFlash(); } }
+function prevCard() { if (fCards.length && fIdx > 0) { fIdx--; renderFlash(); } }
+
+// ═══════════════════════════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════════════════════════
+
+function refreshProgress() {
+  const h = $('prog-history');
+  if (DB.history.length === 0) {
+    h.innerHTML = '<div class="empty-state">No quizzes completed yet.</div>';
+  } else {
+    h.innerHTML = '<table class="history-table"><thead><tr><th>Date</th><th>Type</th><th>Topic</th><th>Score</th></tr></thead><tbody>' +
+      DB.history.slice(0, 15).map(r => {
+        const pct = Math.round(r.score / r.total * 100);
+        const cls = pct >= 80 ? 'pct-high' : pct >= 60 ? 'pct-mid' : 'pct-low';
+        return `<tr><td>${r.date}</td><td>${r.type}</td><td>${r.list}</td><td><span class="pct-pill ${cls}">${pct}%</span></td></tr>`;
+      }).join('') + '</tbody></table>';
+  }
+  const weak = getWeakWords();
+  const wl = $('prog-weak-list');
+  if (weak.length === 0) {
+    wl.innerHTML = '<div class="empty-state">Words you miss often will appear here.</div>';
+  } else {
+    wl.innerHTML = weak.map(w =>
+      `<div class="weak-word"><div><div class="ww">${w.word}</div><div class="wm">${w.meaning}</div></div><span class="miss-badge">${w.count}× missed</span></div>`
+    ).join('');
+  }
+}
+
+function confirmReset() {
+  if (confirm('Reset all progress? This cannot be undone.')) {
+    DB = { history: [], missCount: {}, lastDate: '', streak: 0 };
+    saveData(DB);
+    refreshProgress();
+    refreshHome();
+    alert('Progress reset.');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+
+refreshHome();
+</script>
+</body>
+</html>
