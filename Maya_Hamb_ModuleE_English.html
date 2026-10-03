@@ -697,10 +697,10 @@ body {
             <div class="icon">🅱️</div><h3>List B</h3><p>All List B words</p>
           </div>
           <div class="mode-card" onclick="initFlash('AB')">
-            <div class="icon">🔀</div><h3>Both shuffled</h3><p>Full random deck</p>
+            <div class="icon" style="font-size:20px;font-weight:700;color:var(--accent)">↺</div><h3>Both shuffled</h3><p>Full random deck</p>
           </div>
           <div class="mode-card" onclick="initFlash('WEAK')">
-            <div class="icon">🎯</div><h3>Weak words</h3><p>Words I missed</p>
+            <div class="icon" style="font-size:20px;font-weight:700;color:var(--accent)">✦</div><h3>Weak words</h3><p>Words I missed</p>
           </div>
         </div>
       </div>
@@ -1724,7 +1724,7 @@ function processPinEntry() {
 // DYNAMIC MENU RENDERERS — auto-update when lists are added
 // ═══════════════════════════════════════════════════════
 
-const LIST_ICONS = ['🅰️','🅱️','🅲','🅳','🅴','🅵'];
+const LIST_ICONS = ['A','B','C','D','E','F'];
 
 function renderVocabMenu() {
   const lists = Object.values(VOCAB_LISTS);
@@ -1737,11 +1737,11 @@ function renderVocabMenu() {
   });
   if (lists.length > 1) {
     html += `<div class="mode-card" onclick="startVocab('ALL')">
-      <div class="icon">⭐</div><h3>All lists</h3><p>${getAllWords().length} words total</p>
+      <div class="icon" style="font-size:20px;font-weight:700;color:var(--accent)">★</div><h3>All lists</h3><p>${getAllWords().length} words total</p>
     </div>`;
   }
   html += `<div class="mode-card" onclick="startWeakQuiz()">
-    <div class="icon">🎯</div><h3>Weak words</h3><p>Words I missed</p>
+    <div class="icon" style="font-size:20px;font-weight:700;color:var(--accent)">✦</div><h3>Weak words</h3><p>Words I missed</p>
   </div></div>`;
   const el = $('vocab-menu-inner');
   if (el) el.innerHTML = html;
@@ -1757,11 +1757,11 @@ function renderFlashMenu() {
   });
   if (lists.length > 1) {
     html += `<div class="mode-card" onclick="initFlash('ALL')">
-      <div class="icon">🔀</div><h3>All shuffled</h3><p>${getAllWords().length} words</p>
+      <div class="icon" style="font-size:20px;font-weight:700;color:var(--accent)">↺</div><h3>All shuffled</h3><p>${getAllWords().length} words</p>
     </div>`;
   }
   html += `<div class="mode-card" onclick="initFlash('WEAK')">
-    <div class="icon">🎯</div><h3>Weak words</h3><p>Words I missed</p>
+    <div class="icon" style="font-size:20px;font-weight:700;color:var(--accent)">✦</div><h3>Weak words</h3><p>Words I missed</p>
   </div></div>`;
   const el = $('flash-menu-inner');
   if (el) el.innerHTML = html;
@@ -1797,7 +1797,7 @@ function renderUserList() {
     const initial = u.charAt(0).toUpperCase();
     const hasPin = getUserPin(u) !== '';
     const pinBadge = hasPin
-      ? '<span class="user-pin-badge">🔒 PIN set</span>'
+      ? '<span class="user-pin-badge">PIN set</span>'
       : '<span class="user-nopin-badge">no PIN</span>';
     return `<button class="user-btn" onclick="requestPin('${u}')">
       <div class="user-btn-inner">
@@ -1821,10 +1821,22 @@ function addUser() {
   const name = input.value.trim();
   if (!name) return;
   const users = getUsers();
-  if (!users.includes(name)) { users.push(name); saveUsers(users); }
+  // Case-insensitive duplicate check
+  const exists = users.find(u => u.toLowerCase() === name.toLowerCase());
+  if (exists) {
+    // Name already exists — just go to PIN for that user
+    input.value = '';
+    renderUserList();
+    requestPin(exists);
+    return;
+  }
+  // Capitalize first letter for consistency
+  const cleanName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  users.push(cleanName);
+  saveUsers(users);
   input.value = '';
   renderUserList();
-  requestPin(name);
+  requestPin(cleanName);
 }
 
 function deleteUser(name) {
@@ -2105,8 +2117,8 @@ function renderAdminDash() {
         }).join('')}
       </div>` : ''}
       <div class="admin-section" style="border-top:1px solid #f0eef8;display:flex;gap:8px;align-items:center">
-        <span style="font-size:12px;color:var(--ink3);flex:1">PIN: ${getUserPin(u) ? '🔒 Set' : '⚠️ Not set'}</span>
-        ${getUserPin(u) ? `<button class="btn" style="font-size:12px;padding:6px 12px" onclick="adminResetPin('${u}')">Reset PIN</button>` : ''}
+        <span style="font-size:12px;color:var(--ink3);flex:1">PIN: ${getUserPin(u) ? 'PIN set' : 'No PIN'}</span>
+        ${getUserPin(u) ? '<button class="btn" style="font-size:12px;padding:6px 12px" onclick="adminResetPin(\'' + u + '\')">Reset PIN</button>' : ''}
       </div>
     </div>`;
   }).join('');
