@@ -359,14 +359,93 @@ body {
   .stats-strip { grid-template-columns: repeat(3, 1fr); }
   .app-header h1 { font-size: 17px; }
 }
+
+.user-screen {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--bg); z-index: 999;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.user-screen h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; color: var(--ink); }
+.user-screen p { font-size: 14px; color: var(--ink3); margin-bottom: 28px; }
+.user-list { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.user-btn {
+  padding: 14px 20px; border-radius: 10px;
+  background: var(--surface); border: 1.5px solid #e0ddf5;
+  font-size: 16px; font-weight: 600; color: var(--ink);
+  cursor: pointer; text-align: left;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: border-color .12s, background .12s;
+}
+.user-btn:hover { border-color: var(--accent2); background: var(--accent-bg); }
+.user-btn .user-stats { font-size: 12px; font-weight: 400; color: var(--ink3); }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent-bg); color: var(--accent); font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0; }
+.user-btn-inner { display: flex; align-items: center; }
+.new-user-form { width: 100%; max-width: 360px; display: flex; gap: 8px; }
+.new-user-form input { flex: 1; padding: 10px 14px; border-radius: 8px; border: 1.5px solid #d0cce8; font-size: 15px; background: var(--surface); color: var(--ink); outline: none; }
+.new-user-form input:focus { border-color: var(--accent); }
+.user-delete { font-size: 16px; color: var(--ink3); padding: 4px; cursor: pointer; }
+.user-delete:hover { color: var(--red); }
+.user-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.active-user-pill { background: var(--accent-bg); color: var(--accent); font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; cursor: pointer; border: none; }
+
+.admin-btn { position: fixed; bottom: 16px; right: 16px; background: var(--accent); color: #fff; border: none; border-radius: 50%; width: 44px; height: 44px; font-size: 18px; cursor: pointer; box-shadow: 0 2px 12px rgba(91,79,207,.35); z-index: 100; }
+.admin-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 998; display: none; flex-direction: column; overflow-y: auto; }
+.admin-screen.show { display: flex; }
+.admin-header { background: var(--accent); color: #fff; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.admin-header h2 { font-size: 18px; font-weight: 700; }
+.admin-body { padding: 16px; max-width: 680px; width: 100%; margin: 0 auto; }
+.admin-user-card { background: var(--surface); border-radius: 12px; border: 1.5px solid #e0ddf5; margin-bottom: 14px; overflow: hidden; }
+.admin-user-header { background: var(--accent-bg); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
+.admin-user-header h3 { font-size: 16px; font-weight: 700; color: var(--accent); }
+.admin-user-header .meta { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+.admin-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #e0ddf5; }
+.admin-stat { background: var(--surface); padding: 12px 8px; text-align: center; }
+.admin-stat .val { font-size: 18px; font-weight: 700; color: var(--accent); }
+.admin-stat .lbl { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+.admin-section { padding: 14px 16px; }
+.admin-section h4 { font-size: 12px; font-weight: 700; color: var(--ink3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.admin-history-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-top: 1px solid #f0eef8; font-size: 13px; }
+.admin-history-row .topic { color: var(--ink2); }
+.admin-history-row .date { font-size: 11px; color: var(--ink3); }
+.admin-weak-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-top: 1px solid #f0eef8; font-size: 13px; }
+.admin-weak-row .word { font-weight: 600; }
+.admin-weak-row .meaning { font-size: 11px; color: var(--ink3); max-width: 60%; text-align: right; }
+.no-data { font-size: 13px; color: var(--ink3); text-align: center; padding: 12px 0; }
+.admin-login { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; gap: 12px; }
+.admin-login h2 { font-size: 20px; font-weight: 700; }
+.admin-login p { font-size: 14px; color: var(--ink3); }
+.admin-login input { width: 100%; max-width: 300px; padding: 12px 16px; border-radius: 8px; border: 1.5px solid #d0cce8; font-size: 15px; text-align: center; letter-spacing: 4px; }
+.badge-new { background: var(--green-bg); color: var(--green); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.admin-summary { background: var(--accent-bg); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
+.admin-summary h3 { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+.admin-summary-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.admin-summary-item { text-align: center; }
+.admin-summary-item .v { font-size: 20px; font-weight: 700; color: var(--accent); }
+.admin-summary-item .l { font-size: 11px; color: var(--ink3); }
 </style>
 </head>
 <body>
+
+<!-- USER PICKER SCREEN -->
+<div class="user-screen" id="user-screen">
+  <div style="font-size:40px;margin-bottom:12px">📚</div>
+  <h2>Who's practising?</h2>
+  <p>Pick your name or add a new one</p>
+  <div class="user-list" id="user-list"></div>
+  <div class="new-user-form">
+    <input type="text" id="new-user-input" placeholder="Enter your name..." maxlength="20" onkeydown="if(event.key==='Enter') addUser()">
+    <button class="btn btn-primary" onclick="addUser()">Add</button>
+  </div>
+</div>
 
 <div class="app-header">
   <div>
     <h1>Maya Hamb — Module E English</h1>
     <p>Band III Core I · Lists A &amp; B · 11th Grade</p>
+  </div>
+  <div style="text-align:right">
+    <button class="active-user-pill" id="user-pill" onclick="showUserScreen()">👤 —</button>
   </div>
   <span class="version-tag">v1.0</span>
 </div>
@@ -397,7 +476,7 @@ body {
     <div class="card">
       <p class="section-label">Choose a mode</p>
       <div class="home-grid">
-        <div class="mode-card" onclick="switchTab('vocab'); startVocab('AB')">
+        <div class="mode-card" onclick="switchTab('vocab'); startVocab('ALL')">
           <div class="icon">📝</div>
           <h3>Full vocab test</h3>
           <p>Both lists, 12 questions</p>
@@ -410,7 +489,7 @@ body {
         <div class="mode-card" onclick="switchTab('vocab'); showVocabMenu()">
           <div class="icon">🔤</div>
           <h3>Target a list</h3>
-          <p>List A only or List B only</p>
+          <p>Pick a specific list</p>
         </div>
         <div class="mode-card" onclick="switchTab('flash')">
           <div class="icon">🃏</div>
@@ -434,31 +513,7 @@ body {
 
     <!-- Menu -->
     <div id="vocab-menu">
-      <div class="card">
-        <p class="section-label">Pick a quiz</p>
-        <div class="home-grid">
-          <div class="mode-card" onclick="startVocab('A')">
-            <div class="icon">🅰️</div>
-            <h3>List A</h3>
-            <p>~180 words</p>
-          </div>
-          <div class="mode-card" onclick="startVocab('B')">
-            <div class="icon">🅱️</div>
-            <h3>List B</h3>
-            <p>~180 words</p>
-          </div>
-          <div class="mode-card" onclick="startVocab('AB')">
-            <div class="icon">⭐</div>
-            <h3>Both lists</h3>
-            <p>Full practice</p>
-          </div>
-          <div class="mode-card" onclick="startWeakQuiz()">
-            <div class="icon">🎯</div>
-            <h3>Weak words</h3>
-            <p>Words I missed</p>
-          </div>
-        </div>
-      </div>
+      <div class="card" id="vocab-menu-inner"></div>
     </div>
 
     <!-- Quiz -->
@@ -651,7 +706,15 @@ body {
 // DATA — VOCABULARY
 // ═══════════════════════════════════════════════════════
 
-const VOCAB_A = [
+// ═══════════════════════════════════════════════════════
+// CONTENT REGISTRY — VOCABULARY LISTS
+// ─────────────────────────────────────────────────────
+// To add List C: copy the pattern below and add a new
+// entry inside VOCAB_LISTS. No other code changes needed.
+// ═══════════════════════════════════════════════════════
+
+const VOCAB_LISTS = {
+  A: { id:'A', label:'List A', module:'Module E', words: [
   {w:"addition",pos:"n",fam:"additional (adj)",m:"something that is added; an extra thing"},
   {w:"advance",pos:"n",m:"progress; forward movement"},
   {w:"advanced",pos:"adj",m:"modern, high level; beyond the basics"},
@@ -760,9 +823,8 @@ const VOCAB_A = [
   {w:"take advantage of",pos:"chunk",m:"to use a situation or person for your own benefit"},
   {w:"thanks to",pos:"chunk",m:"as a result of; because of (usually positive)"},
   {w:"throw away",pos:"chunk",m:"to discard something; to put something in the bin"},
-];
-
-const VOCAB_B = [
+  ]},
+  B: { id:'B', label:'List B', module:'Module E', words: [
   {w:"acquire",pos:"v",fam:"acquisition (n)",m:"to get or obtain something"},
   {w:"agriculture",pos:"n",fam:"agricultural (adj)",m:"farming; the practice of growing crops and raising animals"},
   {w:"anxious",pos:"adj",fam:"anxiety (n)",m:"worried and nervous about what might happen"},
@@ -858,7 +920,26 @@ const VOCAB_B = [
   {w:"take part",pos:"chunk",m:"to participate; to join in an activity"},
   {w:"take place",pos:"chunk",m:"to happen; to occur"},
   {w:"to start with",pos:"chunk",m:"at the beginning; firstly"},
-];
+  ]},
+  // ── ADD NEW LISTS HERE ──────────────────────────────
+  // C: { id:'C', label:'List C', module:'Module E', words: [
+  //   {w:"word", pos:"n", fam:"family (n)", m:"meaning here"},
+  // ]},
+  // D: { id:'D', label:'List D', module:'Module F', words: [
+  //   {w:"word", pos:"n", m:"meaning here"},
+  // ]},
+};
+
+// Helper: all words across all lists
+function getAllWords() {
+  return Object.values(VOCAB_LISTS).flatMap(l => l.words);
+}
+
+// Helper: words for a list key ('A','B','ALL','WEAK')
+function getPool(listKey) {
+  if (listKey === 'ALL' || listKey === 'WEAK') return getAllWords();
+  return VOCAB_LISTS[listKey] ? VOCAB_LISTS[listKey].words : getAllWords();
+}
 
 // ═══════════════════════════════════════════════════════
 // DATA — READING PASSAGES (10 unique passages)
@@ -1021,8 +1102,24 @@ const PASSAGES = [
 // STORAGE
 // ═══════════════════════════════════════════════════════
 
-function loadData() { return {}; }
-function saveData(d) { /* in-memory only — works on iPhone */ }
+let currentUser = '';
+function loadData() {
+  if (!currentUser) return {};
+  try { return JSON.parse(localStorage.getItem('moduleE_' + currentUser) || '{}'); } catch { return {}; }
+}
+function saveData(d) {
+  if (!currentUser) return;
+  try { localStorage.setItem('moduleE_' + currentUser, JSON.stringify(d)); } catch {}
+}
+function getUsers() {
+  try {
+    const u = localStorage.getItem('moduleE_users');
+    return u ? JSON.parse(u) : [];
+  } catch { return []; }
+}
+function saveUsers(arr) {
+  try { localStorage.setItem('moduleE_users', JSON.stringify(arr)); } catch {}
+}
 
 let DB = loadData();
 if (!DB.history) DB.history = [];
@@ -1040,6 +1137,7 @@ function recordScore(type, list, score, total) {
     DB.lastDate = today;
   }
   saveData(DB);
+  logEvent('quiz done', type + ' · ' + list, score, total);
 }
 
 function recordMiss(word) {
@@ -1061,7 +1159,7 @@ function getWeakWords() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 20)
     .map(([w, c]) => {
-      const entry = [...VOCAB_A, ...VOCAB_B].find(x => x.w === w);
+      const entry = getAllWords().find(x => x.w === w);
       return { word: w, count: c, meaning: entry ? entry.m : '' };
     });
 }
@@ -1087,7 +1185,7 @@ function switchTab(name) {
   if (name === 'progress') refreshProgress();
   if (name === 'reading') showReadingMenu();
   if (name === 'vocab') showVocabMenu();
-  if (name === 'flash') { $('flash-menu').classList.remove('hidden'); $('flash-active').classList.add('hidden'); }
+  if (name === 'flash') { renderFlashMenu(); $('flash-menu').classList.remove('hidden'); $('flash-active').classList.add('hidden'); }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1116,23 +1214,20 @@ function refreshHome() {
 // VOCABULARY QUIZ
 // ═══════════════════════════════════════════════════════
 
-let vQuestions = [], vIdx = 0, vScore = 0, lastVocabList = 'AB';
+let vQuestions = [], vIdx = 0, vScore = 0, lastVocabList = 'ALL';
 
 function showVocabMenu() {
+  renderVocabMenu();
   $('vocab-menu').classList.remove('hidden');
   $('vocab-quiz').classList.add('hidden');
   $('vocab-done').classList.add('hidden');
 }
 
-function getPool(list) {
-  if (list === 'A') return VOCAB_A;
-  if (list === 'B') return VOCAB_B;
-  return [...VOCAB_A, ...VOCAB_B];
-}
+// getPool defined in Content Registry above
 
 function startVocab(list) {
   lastVocabList = list;
-  const allPool = [...VOCAB_A, ...VOCAB_B];
+  const allPool = getAllWords();
   const pool = shuffle(getPool(list)).slice(0, 12);
   vQuestions = pool.map(item => {
     const distractors = shuffle(allPool.filter(x => x.m !== item.m)).slice(0, 3).map(x => x.m);
@@ -1148,7 +1243,7 @@ function startVocab(list) {
 function startWeakQuiz() {
   const weak = getWeakWords();
   if (weak.length === 0) { alert('No weak words yet! Complete some quizzes first.'); return; }
-  const allPool = [...VOCAB_A, ...VOCAB_B];
+  const allPool = getAllWords();
   lastVocabList = 'WEAK';
   const pool = shuffle(weak.map(w => allPool.find(x => x.w === w.word)).filter(Boolean)).slice(0, 12);
   vQuestions = pool.map(item => {
@@ -1168,7 +1263,7 @@ function renderVocab() {
   $('vq-bar').style.width = pct + '%';
   $('vq-label').textContent = 'Question ' + (vIdx + 1) + ' of ' + vQuestions.length;
   $('vq-score-live').textContent = 'Score: ' + vScore + '/' + vIdx;
-  $('vq-list-tag').textContent = lastVocabList === 'A' ? 'List A' : lastVocabList === 'B' ? 'List B' : lastVocabList === 'WEAK' ? 'Weak words' : 'Lists A + B';
+  $('vq-list-tag').textContent = lastVocabList === 'WEAK' ? 'Weak words' : lastVocabList === 'ALL' ? 'All lists' : (VOCAB_LISTS[lastVocabList] ? VOCAB_LISTS[lastVocabList].label : lastVocabList);
   $('vq-word').textContent = q.word;
   $('vq-pos').textContent = q.pos + (q.fam ? ' · ' + q.fam : '');
   const opts = $('vq-opts');
@@ -1370,12 +1465,15 @@ function initFlash(list) {
   if (list === 'WEAK') {
     const weak = getWeakWords();
     if (weak.length === 0) { alert('No weak words yet!'); return; }
-    const allPool = [...VOCAB_A, ...VOCAB_B];
+    const allPool = getAllWords();
     fCards = shuffle(weak.map(w => allPool.find(x => x.w === w.word)).filter(Boolean));
     fDeckName = 'Weak words';
+  } else if (list === 'ALL') {
+    fCards = shuffle(getAllWords());
+    fDeckName = 'All lists';
   } else {
     fCards = shuffle(getPool(list));
-    fDeckName = list === 'A' ? 'List A' : list === 'B' ? 'List B' : 'Lists A + B';
+    fDeckName = VOCAB_LISTS[list] ? VOCAB_LISTS[list].label : list;
   }
   fIdx = 0; fFlipped = false;
   $('flash-menu').classList.add('hidden');
@@ -1449,11 +1547,141 @@ function confirmReset() {
   }
 }
 
+
+// ═══════════════════════════════════════════════════════
+// DYNAMIC MENU RENDERERS — auto-update when lists are added
+// ═══════════════════════════════════════════════════════
+
+const LIST_ICONS = ['🅰️','🅱️','🅲','🅳','🅴','🅵'];
+
+function renderVocabMenu() {
+  const lists = Object.values(VOCAB_LISTS);
+  let html = '<p class="section-label">Pick a quiz</p><div class="home-grid">';
+  lists.forEach((l, i) => {
+    html += `<div class="mode-card" onclick="startVocab('${l.id}')">
+      <div class="icon">${LIST_ICONS[i]||'📋'}</div>
+      <h3>${l.label}</h3><p>${l.words.length} words · ${l.module}</p>
+    </div>`;
+  });
+  if (lists.length > 1) {
+    html += `<div class="mode-card" onclick="startVocab('ALL')">
+      <div class="icon">⭐</div><h3>All lists</h3><p>${getAllWords().length} words total</p>
+    </div>`;
+  }
+  html += `<div class="mode-card" onclick="startWeakQuiz()">
+    <div class="icon">🎯</div><h3>Weak words</h3><p>Words I missed</p>
+  </div></div>`;
+  const el = $('vocab-menu-inner');
+  if (el) el.innerHTML = html;
+}
+
+function renderFlashMenu() {
+  const lists = Object.values(VOCAB_LISTS);
+  let html = '<p class="section-label">Choose a deck</p><div class="home-grid">';
+  lists.forEach((l, i) => {
+    html += `<div class="mode-card" onclick="initFlash('${l.id}')">
+      <div class="icon">${LIST_ICONS[i]||'📋'}</div><h3>${l.label}</h3><p>${l.words.length} words</p>
+    </div>`;
+  });
+  if (lists.length > 1) {
+    html += `<div class="mode-card" onclick="initFlash('ALL')">
+      <div class="icon">🔀</div><h3>All shuffled</h3><p>${getAllWords().length} words</p>
+    </div>`;
+  }
+  html += `<div class="mode-card" onclick="initFlash('WEAK')">
+    <div class="icon">🎯</div><h3>Weak words</h3><p>Words I missed</p>
+  </div></div>`;
+  const el = $('flash-menu-inner');
+  if (el) el.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════
+// USER MANAGEMENT
+// ═══════════════════════════════════════════════════════
+
+function showUserScreen() {
+  document.getElementById('user-screen').style.display = 'flex';
+  renderUserList();
+}
+
+function renderUserList() {
+  const users = getUsers();
+  const list = document.getElementById('user-list');
+  if (users.length === 0) {
+    list.innerHTML = '<p style="font-size:13px;color:var(--ink3);text-align:center">No users yet — add your name below</p>';
+    return;
+  }
+  list.innerHTML = users.map(u => {
+    const d = getUserData(u);
+    const total = d.history ? d.history.length : 0;
+    const best = total > 0 ? Math.max(...d.history.map(h => Math.round(h.score/h.total*100))) + '%' : '—';
+    const initial = u.charAt(0).toUpperCase();
+    return `<button class="user-btn" onclick="selectUser('${u}')">
+      <div class="user-btn-inner">
+        <div class="user-avatar">${initial}</div>
+        <div>
+          <div>${u}</div>
+          <div class="user-stats">${total} quizzes · best ${best}</div>
+        </div>
+      </div>
+      <span class="user-delete" onclick="event.stopPropagation(); deleteUser('${u}')" title="Remove">✕</span>
+    </button>`;
+  }).join('');
+}
+
+function getUserData(username) {
+  try { return JSON.parse(localStorage.getItem('moduleE_' + username) || '{}'); } catch { return {}; }
+}
+
+function addUser() {
+  const input = document.getElementById('new-user-input');
+  const name = input.value.trim();
+  if (!name) return;
+  const users = getUsers();
+  if (!users.includes(name)) { users.push(name); saveUsers(users); }
+  input.value = '';
+  selectUser(name);
+}
+
+function deleteUser(name) {
+  if (!confirm('Remove ' + name + '? All their progress will be deleted.')) return;
+  try { localStorage.removeItem('moduleE_' + name); } catch {}
+  const users = getUsers().filter(u => u !== name);
+  saveUsers(users);
+  if (currentUser === name) { currentUser = ''; DB = {history:[],missCount:{},lastDate:'',streak:0}; }
+  renderUserList();
+}
+
+function selectUser(name) {
+  currentUser = name;
+  DB = loadData();
+  if (!DB.history) DB.history = [];
+  if (!DB.missCount) DB.missCount = {};
+  if (!DB.lastDate) DB.lastDate = '';
+  if (!DB.streak) DB.streak = 0;
+  document.getElementById('user-screen').style.display = 'none';
+  document.getElementById('user-pill').textContent = '👤 ' + name;
+  logEvent('login', 'Session started');
+  refreshHome();
+}
+
 // ═══════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════
 
-refreshHome();
+// Auto-add Maya as default user if no users exist
+const existingUsers = getUsers();
+if (existingUsers.length === 0) {
+  saveUsers(['Maya']);
+}
+renderUserList();
+// If only one user, auto-select them
+const allUsers = getUsers();
+if (allUsers.length === 1) {
+  selectUser(allUsers[0]);
+} else {
+  showUserScreen();
+}
 
 function speak(word) {
   if (!window.speechSynthesis) return;
@@ -1462,6 +1690,190 @@ function speak(word) {
   u.lang = 'en-GB';
   u.rate = 0.85;
   window.speechSynthesis.speak(u);
+}
+</script>
+
+<!-- ADMIN BUTTON -->
+<button class="admin-btn" onclick="openAdmin()" title="Admin panel">⚙️</button>
+
+<!-- ADMIN SCREEN -->
+<div class="admin-screen" id="admin-screen">
+  <!-- Login -->
+  <div class="admin-login" id="admin-login">
+    <div style="font-size:36px">🔐</div>
+    <h2>Admin access</h2>
+    <p>Enter the admin password</p>
+    <input type="password" id="admin-pw" placeholder="Password" onkeydown="if(event.key==='Enter') checkAdminPw()">
+    <div id="admin-pw-err" style="color:var(--red);font-size:13px;display:none">Wrong password</div>
+    <button class="btn btn-primary" onclick="checkAdminPw()">Enter</button>
+    <button class="btn" onclick="closeAdmin()">Cancel</button>
+  </div>
+  <!-- Dashboard -->
+  <div id="admin-dash" style="display:none;flex-direction:column;width:100%">
+    <div class="admin-header">
+      <div>
+        <h2>Admin dashboard</h2>
+        <div style="font-size:12px;opacity:.8" id="admin-last-refresh"></div>
+      </div>
+      <button onclick="closeAdmin()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px">✕ Close</button>
+    </div>
+    <div class="admin-body">
+      <div class="admin-summary" id="admin-summary"></div>
+      <div id="admin-users-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+// ═══════════════════════════════════════════════════════
+// ACTIVITY LOGGING → Google Sheets
+// ═══════════════════════════════════════════════════════
+const LOG_URL = 'https://script.google.com/macros/s/AKfycbx3CEwpjxn8_vQgYhYDfvFSD6pioO2M0ninSRDlmc2i12ugaJNw-U6kKLyj2T33RH_8/exec';
+
+function logEvent(event, detail, score, total) {
+  if (!currentUser) return;
+  const pct = (score !== undefined && total) ? Math.round(score/total*100) : undefined;
+  const payload = { user: currentUser, event, detail: detail||'', score, total, pct };
+  fetch(LOG_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  }).catch(() => {});
+}
+
+// ═══════════════════════════════════════════════════════
+// ADMIN PANEL
+// ═══════════════════════════════════════════════════════
+
+// ── Change this password ──
+const ADMIN_PASSWORD = 'Alon2024';
+
+let adminUnlocked = false;
+
+function openAdmin() {
+  document.getElementById('admin-screen').classList.add('show');
+  if (adminUnlocked) { showAdminDash(); }
+  else {
+    document.getElementById('admin-login').style.display = 'flex';
+    document.getElementById('admin-dash').style.display = 'none';
+    setTimeout(() => document.getElementById('admin-pw').focus(), 100);
+  }
+}
+
+function closeAdmin() {
+  document.getElementById('admin-screen').classList.remove('show');
+  document.getElementById('admin-pw').value = '';
+  document.getElementById('admin-pw-err').style.display = 'none';
+}
+
+function checkAdminPw() {
+  const pw = document.getElementById('admin-pw').value;
+  if (pw === ADMIN_PASSWORD) {
+    adminUnlocked = true;
+    document.getElementById('admin-pw-err').style.display = 'none';
+    showAdminDash();
+  } else {
+    document.getElementById('admin-pw-err').style.display = 'block';
+    document.getElementById('admin-pw').value = '';
+  }
+}
+
+function showAdminDash() {
+  document.getElementById('admin-login').style.display = 'none';
+  document.getElementById('admin-dash').style.display = 'flex';
+  document.getElementById('admin-last-refresh').textContent = 'Last updated: ' + new Date().toLocaleString();
+  renderAdminDash();
+}
+
+function renderAdminDash() {
+  const users = getUsers();
+  const summaryEl = document.getElementById('admin-summary');
+  const listEl = document.getElementById('admin-users-list');
+
+  if (users.length === 0) {
+    summaryEl.innerHTML = '<div class="no-data">No users yet.</div>';
+    listEl.innerHTML = '';
+    return;
+  }
+
+  // Summary stats
+  let totalQuizzes = 0, totalUsers = users.length;
+  let recentActivity = [];
+  users.forEach(u => {
+    const d = getUserData(u);
+    if (d.history) {
+      totalQuizzes += d.history.length;
+      d.history.slice(0,3).forEach(h => recentActivity.push({user:u, ...h}));
+    }
+  });
+  recentActivity.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  summaryEl.innerHTML = `<h3>Overview</h3>
+    <div class="admin-summary-grid">
+      <div class="admin-summary-item"><div class="v">${totalUsers}</div><div class="l">Users</div></div>
+      <div class="admin-summary-item"><div class="v">${totalQuizzes}</div><div class="l">Total quizzes</div></div>
+      <div class="admin-summary-item"><div class="v">${recentActivity.length > 0 ? recentActivity[0].user : '—'}</div><div class="l">Last active</div></div>
+    </div>`;
+
+  // Per-user cards
+  listEl.innerHTML = users.map(u => {
+    const d = getUserData(u);
+    const history = d.history || [];
+    const missCount = d.missCount || {};
+    const streak = d.streak || 0;
+    const total = history.length;
+    const best = total > 0 ? Math.max(...history.map(h => Math.round(h.score/h.total*100))) : 0;
+    const avg = total > 0 ? Math.round(history.reduce((s,h) => s + h.score/h.total*100, 0) / total) : 0;
+    const weakWords = Object.entries(missCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const lastSeen = history.length > 0 ? history[0].date : 'Never';
+    const isNew = history.length <= 2;
+
+    const pctColor = p => p >= 80 ? 'var(--green)' : p >= 60 ? 'var(--amber)' : 'var(--red)';
+
+    return `<div class="admin-user-card">
+      <div class="admin-user-header">
+        <div>
+          <h3>${u} ${isNew && total > 0 ? '<span class="badge-new">new</span>' : ''}</h3>
+          <div class="meta">Last active: ${lastSeen} · Streak: ${streak} day${streak !== 1 ? 's' : ''}</div>
+        </div>
+        <div style="font-size:28px;opacity:.3">${u.charAt(0).toUpperCase()}</div>
+      </div>
+      <div class="admin-stats">
+        <div class="admin-stat"><div class="val">${total}</div><div class="lbl">Quizzes</div></div>
+        <div class="admin-stat"><div class="val" style="color:${pctColor(best)}">${best}%</div><div class="lbl">Best</div></div>
+        <div class="admin-stat"><div class="val" style="color:${pctColor(avg)}">${avg}%</div><div class="lbl">Average</div></div>
+        <div class="admin-stat"><div class="val">${weakWords.length}</div><div class="lbl">Weak words</div></div>
+      </div>
+      ${history.length > 0 ? `
+      <div class="admin-section">
+        <h4>Recent activity</h4>
+        ${history.slice(0,5).map(h => {
+          const pct = Math.round(h.score/h.total*100);
+          const cls = pct>=80?'pct-high':pct>=60?'pct-mid':'pct-low';
+          return `<div class="admin-history-row">
+            <div>
+              <div>${h.type === 'vocab' ? '📝 Vocab' : '📖 Reading'} · ${h.list}</div>
+              <div class="date">${h.date}</div>
+            </div>
+            <span class="pct-pill ${cls}">${h.score}/${h.total} · ${pct}%</span>
+          </div>`;
+        }).join('')}
+      </div>` : '<div class="no-data" style="padding:14px">No quizzes yet</div>'}
+      ${weakWords.length > 0 ? `
+      <div class="admin-section" style="border-top:1px solid #f0eef8">
+        <h4>Struggling with</h4>
+        ${weakWords.map(([w,c]) => {
+          const entry = getAllWords().find(x => x.w === w);
+          return `<div class="admin-weak-row">
+            <div><span class="word">${w}</span> <span class="miss-badge">${c}× missed</span></div>
+            <div class="meaning">${entry ? entry.m.slice(0,40)+(entry.m.length>40?'…':'') : ''}</div>
+          </div>`;
+        }).join('')}
+      </div>` : ''}
+    </div>`;
+  }).join('');
 }
 </script>
 </body>
