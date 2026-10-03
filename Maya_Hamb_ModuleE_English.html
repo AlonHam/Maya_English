@@ -423,19 +423,64 @@ body {
 .admin-summary-item { text-align: center; }
 .admin-summary-item .v { font-size: 20px; font-weight: 700; color: var(--accent); }
 .admin-summary-item .l { font-size: 11px; color: var(--ink3); }
+
+.pin-screen { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 24px; gap:12px; }
+.pin-dots { display:flex; gap:12px; margin:8px 0; }
+.pin-dot { width:14px; height:14px; border-radius:50%; border:2px solid var(--accent); background:transparent; transition:background .15s; }
+.pin-dot.filled { background:var(--accent); }
+.pin-pad { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:240px; width:100%; margin-top:8px; }
+.pin-key { padding:16px; border-radius:10px; border:1.5px solid #e0ddf5; background:var(--surface); font-size:20px; font-weight:600; cursor:pointer; text-align:center; transition:background .12s; }
+.pin-key:hover { background:var(--accent-bg); border-color:var(--accent2); }
+.pin-key.del { font-size:16px; color:var(--ink3); }
+.pin-err { color:var(--red); font-size:13px; min-height:18px; }
+.pin-set-form { display:flex; flex-direction:column; align-items:center; gap:10px; width:100%; max-width:280px; }
+.user-pin-badge { font-size:11px; background:var(--green-bg); color:var(--green); padding:2px 8px; border-radius:10px; margin-left:6px; }
+.user-nopin-badge { font-size:11px; background:var(--amber-bg); color:var(--amber); padding:2px 8px; border-radius:10px; margin-left:6px; }
 </style>
 </head>
 <body>
 
 <!-- USER PICKER SCREEN -->
 <div class="user-screen" id="user-screen">
-  <div style="font-size:40px;margin-bottom:12px">📚</div>
-  <h2>Who's practising?</h2>
-  <p>Pick your name or add a new one</p>
-  <div class="user-list" id="user-list"></div>
-  <div class="new-user-form">
-    <input type="text" id="new-user-input" placeholder="Enter your name..." maxlength="20" onkeydown="if(event.key==='Enter') addUser()">
-    <button class="btn btn-primary" onclick="addUser()">Add</button>
+  <!-- Step 1: pick user -->
+  <div id="us-pick" style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:400px;padding:24px">
+    <div style="font-size:40px;margin-bottom:12px">📚</div>
+    <h2 style="font-size:22px;font-weight:700;margin-bottom:6px">Who's practising?</h2>
+    <p style="font-size:14px;color:var(--ink3);margin-bottom:24px">Pick your name</p>
+    <div class="user-list" id="user-list"></div>
+    <div class="new-user-form">
+      <input type="text" id="new-user-input" placeholder="Enter your name..." maxlength="20" onkeydown="if(event.key==='Enter') addUser()">
+      <button class="btn btn-primary" onclick="addUser()">Add</button>
+    </div>
+  </div>
+  <!-- Step 2: enter PIN -->
+  <div id="us-pin" style="display:none;flex-direction:column;align-items:center;width:100%;max-width:320px">
+    <div class="pin-screen">
+      <div style="font-size:32px" id="pin-avatar"></div>
+      <h2 style="font-size:20px;font-weight:700" id="pin-name-label"></h2>
+      <p style="font-size:13px;color:var(--ink3)" id="pin-instruction">Enter your 4-digit PIN</p>
+      <div class="pin-dots" id="pin-dots">
+        <div class="pin-dot" id="pd0"></div>
+        <div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div>
+        <div class="pin-dot" id="pd3"></div>
+      </div>
+      <div class="pin-err" id="pin-err"></div>
+      <div class="pin-pad">
+        <button class="pin-key" onclick="pinKey('1')">1</button>
+        <button class="pin-key" onclick="pinKey('2')">2</button>
+        <button class="pin-key" onclick="pinKey('3')">3</button>
+        <button class="pin-key" onclick="pinKey('4')">4</button>
+        <button class="pin-key" onclick="pinKey('5')">5</button>
+        <button class="pin-key" onclick="pinKey('6')">6</button>
+        <button class="pin-key" onclick="pinKey('7')">7</button>
+        <button class="pin-key" onclick="pinKey('8')">8</button>
+        <button class="pin-key" onclick="pinKey('9')">9</button>
+        <button class="pin-key" onclick="pinBack()" style="grid-column:1">⌫</button>
+        <button class="pin-key" onclick="pinKey('0')">0</button>
+        <button class="pin-key" onclick="cancelPin()" style="font-size:13px;color:var(--ink3)">Back</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1586,6 +1631,95 @@ function confirmReset() {
 }
 
 
+
+// ═══════════════════════════════════════════════════════
+// PIN LOGIC
+// ═══════════════════════════════════════════════════════
+
+let pinTarget = '';
+let pinBuffer = '';
+let pinMode = 'enter'; // 'enter' | 'set' | 'confirm'
+let pinFirstEntry = '';
+
+function requestPin(username) {
+  pinTarget = username;
+  pinBuffer = '';
+  const hasPin = getUserPin(username) !== '';
+  pinMode = hasPin ? 'enter' : 'set';
+  pinFirstEntry = '';
+  showPinScreen(username, hasPin ? 'Enter your PIN' : 'Create a 4-digit PIN');
+}
+
+function showPinScreen(username, instruction) {
+  document.getElementById('us-pick').style.display = 'none';
+  document.getElementById('us-pin').style.display = 'flex';
+  document.getElementById('pin-avatar').textContent = username.charAt(0).toUpperCase();
+  document.getElementById('pin-name-label').textContent = username;
+  document.getElementById('pin-instruction').textContent = instruction;
+  document.getElementById('pin-err').textContent = '';
+  updatePinDots();
+}
+
+function cancelPin() {
+  pinBuffer = '';
+  document.getElementById('us-pin').style.display = 'none';
+  document.getElementById('us-pick').style.display = 'flex';
+  document.getElementById('pin-err').textContent = '';
+}
+
+function pinKey(digit) {
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += digit;
+  updatePinDots();
+  if (pinBuffer.length === 4) {
+    setTimeout(() => processPinEntry(), 200);
+  }
+}
+
+function pinBack() {
+  pinBuffer = pinBuffer.slice(0, -1);
+  updatePinDots();
+}
+
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('pd' + i);
+    if (dot) dot.classList.toggle('filled', i < pinBuffer.length);
+  }
+}
+
+function processPinEntry() {
+  if (pinMode === 'enter') {
+    const stored = getUserPin(pinTarget);
+    if (pinBuffer === stored) {
+      selectUser(pinTarget);
+    } else {
+      document.getElementById('pin-err').textContent = 'Wrong PIN — try again';
+      pinBuffer = '';
+      updatePinDots();
+    }
+  } else if (pinMode === 'set') {
+    pinFirstEntry = pinBuffer;
+    pinBuffer = '';
+    pinMode = 'confirm';
+    document.getElementById('pin-instruction').textContent = 'Confirm your PIN';
+    document.getElementById('pin-err').textContent = '';
+    updatePinDots();
+  } else if (pinMode === 'confirm') {
+    if (pinBuffer === pinFirstEntry) {
+      setUserPin(pinTarget, pinBuffer);
+      selectUser(pinTarget);
+    } else {
+      document.getElementById('pin-err').textContent = 'PINs don't match — try again';
+      pinBuffer = '';
+      pinFirstEntry = '';
+      pinMode = 'set';
+      document.getElementById('pin-instruction').textContent = 'Create a 4-digit PIN';
+      updatePinDots();
+    }
+  }
+}
+
 // ═══════════════════════════════════════════════════════
 // DYNAMIC MENU RENDERERS — auto-update when lists are added
 // ═══════════════════════════════════════════════════════
@@ -1642,6 +1776,13 @@ function showUserScreen() {
   renderUserList();
 }
 
+function getUserPin(username) {
+  try { return localStorage.getItem('moduleE_pin_' + username) || ''; } catch { return ''; }
+}
+function setUserPin(username, pin) {
+  try { localStorage.setItem('moduleE_pin_' + username, pin); } catch {}
+}
+
 function renderUserList() {
   const users = getUsers();
   const list = document.getElementById('user-list');
@@ -1654,11 +1795,15 @@ function renderUserList() {
     const total = d.history ? d.history.length : 0;
     const best = total > 0 ? Math.max(...d.history.map(h => Math.round(h.score/h.total*100))) + '%' : '—';
     const initial = u.charAt(0).toUpperCase();
-    return `<button class="user-btn" onclick="selectUser('${u}')">
+    const hasPin = getUserPin(u) !== '';
+    const pinBadge = hasPin
+      ? '<span class="user-pin-badge">🔒 PIN set</span>'
+      : '<span class="user-nopin-badge">no PIN</span>';
+    return `<button class="user-btn" onclick="requestPin('${u}')">
       <div class="user-btn-inner">
         <div class="user-avatar">${initial}</div>
         <div>
-          <div>${u}</div>
+          <div>${u} ${pinBadge}</div>
           <div class="user-stats">${total} quizzes · best ${best}</div>
         </div>
       </div>
@@ -1715,12 +1860,8 @@ if (existingUsers.length === 0) {
 }
 renderUserList();
 // If only one user, auto-select them
-const allUsers = getUsers();
-if (allUsers.length === 1) {
-  selectUser(allUsers[0]);
-} else {
-  showUserScreen();
-}
+// Always show user picker for security (PIN required)
+showUserScreen();
 
 function speak(word) {
   if (!window.speechSynthesis) return;
@@ -1843,6 +1984,13 @@ function openAdmin() {
   }
 }
 
+function adminResetPin(username) {
+  if (confirm('Reset PIN for ' + username + '? They will be asked to create a new one next login.')) {
+    try { localStorage.removeItem('moduleE_pin_' + username); } catch {}
+    renderAdminDash();
+  }
+}
+
 function closeAdmin() {
   document.getElementById('admin-screen').classList.remove('show');
   document.getElementById('admin-pw').value = '';
@@ -1955,6 +2103,10 @@ function renderAdminDash() {
           </div>`;
         }).join('')}
       </div>` : ''}
+      <div class="admin-section" style="border-top:1px solid #f0eef8;display:flex;gap:8px;align-items:center">
+        <span style="font-size:12px;color:var(--ink3);flex:1">PIN: ${getUserPin(u) ? '🔒 Set' : '⚠️ Not set'}</span>
+        ${getUserPin(u) ? `<button class="btn" style="font-size:12px;padding:6px 12px" onclick="adminResetPin('${u}')">Reset PIN</button>` : ''}
+      </div>
     </div>`;
   }).join('');
 }
