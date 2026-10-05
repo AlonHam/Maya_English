@@ -1347,7 +1347,7 @@ function showVocabMenu() {
 function startVocab(list) {
   lastVocabList = list;
   const allPool = getAllWords();
-  const pool = shuffle(getPool(list)).slice(0, 12);
+  const pool = shuffle(getPool(list)).slice(0, 6);
   vQuestions = pool.map(item => {
     const distractors = shuffle(allPool.filter(x => x.m !== item.m)).slice(0, 3).map(x => x.m);
     return { word: item.w, pos: item.pos || '', fam: item.fam || '', correct: item.m, opts: shuffle([item.m, ...distractors]), heb: item.h || '', ex: item.ex || '', translit: item.t || '' };
@@ -1364,7 +1364,7 @@ function startWeakQuiz() {
   if (weak.length === 0) { alert('No weak words yet! Complete some quizzes first.'); return; }
   const allPool = getAllWords();
   lastVocabList = 'WEAK';
-  const pool = shuffle(weak.map(w => allPool.find(x => x.w === w.word)).filter(Boolean)).slice(0, 12);
+  const pool = shuffle(weak.map(w => allPool.find(x => x.w === w.word)).filter(Boolean)).slice(0, 6);
   vQuestions = pool.map(item => {
     const distractors = shuffle(allPool.filter(x => x.m !== item.m)).slice(0, 3).map(x => x.m);
     return { word: item.w, pos: item.pos || '', fam: item.fam || '', correct: item.m, opts: shuffle([item.m, ...distractors]), heb: item.h || '', ex: item.ex || '', translit: item.t || '' };
