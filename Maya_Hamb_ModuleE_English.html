@@ -6,7 +6,7 @@
 <title>Maya Hamb -- Module E English Practice</title>
 <style>
 /* -- VERSION TAG (bump this when updating) ----------- */
-/* v1.0 -- Dec 2024 */
+/* v1.6 -- 2026-10-06 */
 
 :root {
   --ink: #1a1a2e;
@@ -80,25 +80,30 @@ body {
 /* -- TABS ------------------------------------------- */
 .tabs {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   margin-bottom: 20px;
   background: var(--surface);
-  padding: 6px;
+  padding: 5px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.tabs::-webkit-scrollbar { display: none; }
 .tab {
-  flex: 1;
-  padding: 9px 6px;
+  flex: 0 0 auto;
+  padding: 8px 12px;
   border: none;
   border-radius: 7px;
   background: transparent;
   color: var(--ink3);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   text-align: center;
   transition: background .15s, color .15s;
+  white-space: nowrap;
 }
 .tab.active {
   background: var(--accent);
@@ -270,9 +275,9 @@ body {
 }
 .flashcard .fc-meaning.show { display: block; }
 .flashcard .fc-tap { font-size: 12px; color: var(--ink3); margin-top: 12px; }
-.speak-btn { background: var(--accent-bg); border: 1.5px solid #d0cce8; border-radius: 50%; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; margin-left: 8px; vertical-align: middle; transition: background .15s; flex-shrink: 0; }
+.speak-btn { background: var(--accent-bg); border: 1.5px solid #d0cce8; border-radius: 50%; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; vertical-align: middle; transition: background .15s; flex-shrink: 0; }
 .speak-btn:hover { background: #ddd8ff; }
-.word-row { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.word-row { display: flex; align-items: center; justify-content: flex-start; gap: 6px; flex-wrap: wrap; }
 
 /* -- READING PASSAGE -------------------------------- */
 .passage {
@@ -473,8 +478,14 @@ body {
 .word-popup .wp-translit { font-size: 13px; color: #b8b4ff; direction: rtl; margin-bottom: 2px; }
 .word-popup .wp-heb { font-size: 13px; color: #ffd080; direction: rtl; }
 .word-popup .wp-en { font-size: 12px; color: #aaa; margin-top: 4px; }
-.passage .tap-word { cursor: pointer; border-bottom: 1px dotted #7c6fe0; }
-.passage .tap-word:hover { background: rgba(91,79,207,.1); border-radius: 2px; }
+.passage .tap-word { cursor: pointer; }
+.passage .tap-word:hover { background: rgba(91,79,207,.12); border-radius: 2px; }
+.passage .tap-word:active { background: rgba(91,79,207,.2); border-radius: 2px; }
+.passage .tap-word.has-translation { 
+  border-bottom: 2px solid rgba(91,79,207,.4);
+  cursor: pointer;
+}
+.passage .tap-word.has-translation:hover { background: rgba(91,79,207,.15); }
 
 /* Bookmark button */
 .bkmk-btn { background: none; border: none; cursor: pointer; font-size: 16px; padding: 2px 4px; color: var(--ink3); vertical-align: middle; }
@@ -658,7 +669,7 @@ body {
           <button class="heb-btn" id="vq-heb-btn" onclick="tP($('vq-heb-panel'))" style="margin-top:0">עברית</button>
           <button class="bkmk-btn" id="vq-bkmk-btn" onclick="toggleBookmark(vQuestions[vIdx].word);updateBookmarkBtn(vQuestions[vIdx].word)" title="Bookmark">&#128278;</button>
         </div>
-        <div id="vq-heb-panel" style="display:none;text-align:right;padding:12px;margin-top:8px;background:#fffbef;border:1.5px solid #f0e080;border-radius:10px">
+        <div id="vq-heb-panel" style="display:none;text-align:right;padding:12px;margin-top:8px;background:#fffbef;border:1.5px solid #f0e080;border-radius:10px;direction:rtl">
           <div id="vq-heb-t" style="font-size:22px;font-weight:700;color:#7a5200;direction:rtl;font-family:Arial,sans-serif;margin-bottom:6px"></div>
           <div id="vq-heb-m" style="font-size:15px;color:#5a3a00;direction:rtl;margin-bottom:8px"></div>
           <button id="vq-ex-btn" onclick="tP($('vq-ex-text'))" style="font-size:12px;color:#7a5200;background:none;border:none;cursor:pointer;text-align:right;width:100%;padding:0;display:none">▼ דוגמה</button>
@@ -685,8 +696,9 @@ body {
         <div class="score-title" id="vd-title"></div>
         <div class="score-sub" id="vd-sub"></div>
         <div class="btn-row" style="justify-content:center">
-          <button class="btn" onclick="startVocab(lastVocabList)">Try again</button>
-          <button class="btn btn-primary" onclick="showVocabMenu()">Other quiz</button>
+          <button class="btn" onclick="retryVocab()">Retry same words</button>
+          <button class="btn btn-primary" onclick="startVocab(lastVocabList)">New quiz</button>
+          <button class="btn" onclick="showVocabMenu()">Other list</button>
         </div>
       </div>
       <div class="card">
@@ -714,6 +726,7 @@ body {
         <div class="passage-title" id="rp-title"></div>
         <div class="passage" id="rp-body"></div>
       </div>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:10px;padding:8px 12px;background:var(--surface2);border-radius:8px">Words with a <span style="border-bottom:2px solid rgba(91,79,207,.5);padding-bottom:1px">purple underline</span> have a Hebrew translation — tap to see it.</div>
       <div class="btn-row">
         <button class="btn" onclick="showReadingMenu()">← Back</button>
         <button class="btn btn-primary" onclick="startReadingQs()">Answer questions -></button>
@@ -877,6 +890,21 @@ function saveMidProgress(score, answered) {
 }
 function clearMidProgress() {
   try { localStorage.removeItem('moduleE_mid_' + currentUser); } catch(e) {}
+}
+
+
+function retryVocab() {
+  if (!retryQuestions || retryQuestions.length === 0) { startVocab(lastVocabList); return; }
+  // Reshuffle the same words with new option order
+  vQuestions = retryQuestions.map(function(q) {
+    var opts = q.opts.slice().sort(function(){return Math.random()-.5;});
+    return Object.assign({}, q, {opts: opts});
+  }).sort(function(){return Math.random()-.5;});
+  retryQuestions = vQuestions.slice();
+  vIdx = 0; vScore = 0; quizHistory = [];
+  $('vocab-done').classList.add('hidden');
+  $('vocab-quiz').classList.remove('hidden');
+  renderVocab();
 }
 
 function tP(el) {
@@ -1130,11 +1158,11 @@ function getPool(listKey) {
 const PASSAGES = [
   {
     title: "Street music",
-    text: `<p><strong>I</strong> &nbsp;Every weekend, hundreds of musicians take to the streets of cities around the world to perform for passers-by. Known as "buskers", these performers play everything from classical violin to electronic beats, turning ordinary pavements and metro stations into impromptu concert halls. In some cities, such as London and New York, busking has a long tradition stretching back centuries.</p>
-<p><strong>II</strong> &nbsp;While busking might seem like a simple way to earn money, it is in fact a demanding profession. Most cities require buskers to apply for a licence before they are allowed to perform in public spaces. In London, for example, performers must pass an audition to play on the underground train system, and only a limited number of licences are issued each year.</p>
-<p><strong>III</strong> &nbsp;Some cities have designated areas where buskers can perform freely without needing official permission. These spots are popular with tourists, who often stop to listen and take photographs. Some performers have even become famous after videos of their street performances went viral on social media, attracting millions of viewers around the world.</p>
-<p><strong>IV</strong> &nbsp;Busking is not without its challenges. Performers must deal with unpredictable weather, noise from traffic, and competition from other musicians. Some residents living near popular busking spots have complained about the noise, leading local authorities to impose time restrictions on when and where buskers may perform.</p>
-<p><strong>V</strong> &nbsp;Despite these difficulties, many musicians choose busking because it gives them freedom to express themselves creatively without the pressure of a formal concert setting. As one experienced busker put it: "Out here, every performance is unique. The audience changes every minute, and that keeps me motivated."</p>`,
+    text: `<p><strong>I</strong> &nbsp;Every weekend, musicians play music on the streets of cities all over the world. People call these musicians "buskers". They play in busy streets, train stations, and parks. Some play guitar or violin. Others sing or play electronic music. Many people stop to listen and enjoy the music on their way to work or school.</p>
+<p><strong>II</strong> &nbsp;Busking is not as easy as it looks. In most cities, buskers need to get special permission before they can play in public. In London, for example, musicians must pass a test to play in the underground train stations. Every year, only a small number of people get this permission. Without it, they are not allowed to play.</p>
+<p><strong>III</strong> &nbsp;Some cities have special areas where musicians can play freely. These places are very popular with tourists, who like to stop, listen, and take photos. Some buskers have become very famous. Videos of their street shows were shared on social media, and millions of people around the world watched them.</p>
+<p><strong>IV</strong> &nbsp;Street music is not always easy. Buskers have to deal with bad weather, loud traffic, and other musicians nearby. Sometimes people who live close to popular busking spots complain about the noise. Because of this, some cities have rules about when and where buskers can play.</p>
+<p><strong>V</strong> &nbsp;Even with these problems, many musicians love busking. It gives them the freedom to play what they want, when they want. One experienced busker said: "Out here, every show is different. The people who listen change every minute. That is what I love about it."</p>`,
     qs: [
       {q:"What do we learn about buskers in paragraph I?", type:"mc", opts:["How they choose their songs","Where they get their instruments","What kind of music they play","Why cities pay them to perform"], ans:2, explain:"Paragraph I says buskers play everything from classical violin to electronic beats -- telling us what kind of music they perform."},
       {q:"What information is given about getting a licence in London? (paragraph II)", type:"mc", opts:["Licences are free for anyone who applies","Performers must pass an audition","Only foreign musicians need a licence","Licences are issued every month"], ans:1, explain:"Paragraph II states performers must pass an audition to play on the London underground, and only a limited number of licences are issued."},
@@ -1145,11 +1173,11 @@ const PASSAGES = [
   },
   {
     title: "Ocean plastic",
-    text: `<p><strong>I</strong> &nbsp;Every year, millions of tonnes of plastic waste end up in the world's oceans. Scientists estimate that there are now more than five trillion pieces of plastic floating in the sea, harming marine life and polluting coastlines across the globe. The problem has grown so serious that researchers have found microplastics -- tiny pieces of plastic less than five millimetres in size -- in fish, seabirds, and even in drinking water.</p>
-<p><strong>II</strong> &nbsp;Most ocean plastic comes from land. It enters the sea through rivers, drainage systems, and by being blown off beaches or landfill sites. Wealthier countries tend to produce more plastic waste per person, but poorer countries often lack the infrastructure to manage it properly. As a result, experts say that the countries responsible for the most pollution are not always the ones that suffer most from its effects.</p>
-<p><strong>III</strong> &nbsp;Several organisations have been working to remove plastic from the ocean. One well-known project uses a long floating barrier to collect plastic as it drifts on the surface. The collected material is then brought to shore, sorted, and recycled. While such projects are impressive, critics point out that they cannot remove microplastics, which are too small to catch.</p>
-<p><strong>IV</strong> &nbsp;Governments around the world have introduced laws to reduce plastic use. Many countries have banned single-use plastic bags and packaging. Some have introduced taxes on plastic products, making them more expensive to encourage people to switch to alternatives. However, environmental groups argue that these measures do not go far enough and that more dramatic action is needed.</p>
-<p><strong>V</strong> &nbsp;Individuals can also make a difference. Choosing products with less packaging, refusing disposable plastics, and taking part in beach clean-ups are simple steps that anyone can take. As one environmental campaigner explained: "Each piece of plastic you refuse to use is one piece that will never reach the sea."</p>`,
+    text: `<p><strong>I</strong> &nbsp;Every year, millions of tonnes of plastic waste end up in the sea. Scientists say there are now more than five trillion pieces of plastic floating in the world's oceans. This plastic is very harmful to fish, sea birds, and other animals. Scientists have even found tiny pieces of plastic, called microplastics, in the fish that people eat and in drinking water.</p>
+<p><strong>II</strong> &nbsp;Most of the plastic in the ocean comes from land. It enters the sea through rivers and drains, or is blown off beaches. Rich countries produce more plastic waste, but poorer countries often do not have good systems to deal with it. As a result, the problem affects everyone, even countries that do not produce much plastic themselves.</p>
+<p><strong>III</strong> &nbsp;Some groups are trying to clean up the ocean. One well-known project uses a long barrier that floats on the water and collects plastic. Workers then bring the plastic to shore, sort it, and recycle it. This is impressive work, but it has one big problem: the barrier cannot catch microplastics, because they are too small.</p>
+<p><strong>IV</strong> &nbsp;Many governments have introduced new laws to reduce plastic use. Some countries have banned plastic bags. Others have made plastic products more expensive by adding a special tax. However, many environmental groups say these steps are not enough, and that more needs to be done.</p>
+<p><strong>V</strong> &nbsp;Ordinary people can also help. Choosing products with less packaging, saying no to plastic bags, and joining beach clean-up events are all simple actions. As one campaigner said: "Every piece of plastic you choose not to use is one less piece that can reach the sea."</p>`,
     qs: [
       {q:"What do we learn about microplastics in paragraph I?", type:"mc", opts:["They are found only in the deepest parts of the ocean","They have been found in fish, seabirds, and drinking water","They are larger than five millimetres","They were discovered last year"], ans:1, explain:"Paragraph I states that researchers found microplastics in fish, seabirds, and even in drinking water."},
       {q:"According to paragraph II, where does most ocean plastic come from?", type:"mc", opts:["From ships at sea","From underwater factories","From land, through rivers and drainage systems","From fishing boats"], ans:2, explain:"Paragraph II says most ocean plastic comes from land -- entering the sea through rivers, drainage systems, and blown from beaches."},
@@ -1160,11 +1188,11 @@ const PASSAGES = [
   },
   {
     title: "Sleep and learning",
-    text: `<p><strong>I</strong> &nbsp;For many students, staying up late to study before an exam seems like a good idea. However, research into how the brain works suggests that this approach may actually be harmful. Scientists have discovered that sleep plays a crucial role in the way we learn and remember new information. Without enough sleep, the brain struggles to store and organise the knowledge it has acquired during the day.</p>
-<p><strong>II</strong> &nbsp;During sleep, the brain goes through several stages. In the deepest stage, known as slow-wave sleep, the brain replays the experiences of the day. It strengthens the connections between brain cells that were formed during learning, turning short-term memories into long-term ones. This process, called memory consolidation, is essential for genuine understanding rather than simply repeating information.</p>
-<p><strong>III</strong> &nbsp;Studies have shown that students who sleep well before an exam consistently perform better than those who do not. In one experiment, two groups of students were asked to learn a list of words. The group that slept for eight hours before being tested remembered significantly more words than the group that stayed awake. Researchers concluded that sleep had effectively doubled the benefits of studying.</p>
-<p><strong>IV</strong> &nbsp;Some schools have begun to take this research seriously. In several countries, high schools have moved their start times to later in the morning to give teenagers more sleep. Teenagers need more sleep than adults -- experts recommend between eight and ten hours per night -- because their brains are still developing. Early school starts interfere with this natural sleep cycle.</p>
-<p><strong>V</strong> &nbsp;The message for students is clear. Rather than sacrificing sleep in order to study longer, it is more effective to study well during the day and then get a full night's rest. As one sleep researcher put it: "Sleeping is not wasting time -- it is when the real learning happens."</p>`,
+    text: `<p><strong>I</strong> &nbsp;Many students stay up late to study before an exam. They think this will help them do better. But scientists have found that this is not a good idea. Sleep is very important for learning. When we do not get enough sleep, our brain cannot store the things we learned during the day.</p>
+<p><strong>II</strong> &nbsp;When we sleep, the brain goes through different stages. In the deepest stage, the brain replays the things we did and learned that day. It makes the connections between ideas stronger. This helps us remember information for a long time, not just for one day. Without this deep sleep, we forget much more quickly.</p>
+<p><strong>III</strong> &nbsp;Studies show that students who sleep well before an exam do much better than those who do not. In one study, two groups of students learned a list of words. The group that slept for eight hours remembered many more words than the group that stayed awake all night. Sleep helped the brain hold onto the information.</p>
+<p><strong>IV</strong> &nbsp;Some schools have changed their start times because of this research. In several countries, high schools now start later in the morning so that students can sleep more. Teenagers need between eight and ten hours of sleep each night because their brains are still growing. Starting school too early makes it harder for them to learn.</p>
+<p><strong>V</strong> &nbsp;The message is simple: do not give up sleep to study more. It is better to study well during the day and then sleep a full night. As one researcher said: "Sleeping is not wasting time. It is actually when the real learning happens."</p>`,
     qs: [
       {q:"What does research suggest about staying up late to study? (paragraph I)", type:"mc", opts:["It is the best way to prepare for an exam","It may actually be harmful","It works well for most students","It helps the brain store information"], ans:1, explain:"Paragraph I says research suggests that staying up late to study may actually be harmful, as sleep is crucial for learning."},
       {q:"What happens during slow-wave sleep? (paragraph II) COMPLETE THE SENTENCE: The brain ...", type:"mc", opts:["produces new brain cells","forgets unimportant information","replays the experiences of the day","stops storing memories"], ans:2, explain:"Paragraph II says that during slow-wave sleep, the brain replays the experiences of the day and strengthens connections between brain cells."},
@@ -1175,11 +1203,11 @@ const PASSAGES = [
   },
   {
     title: "Urban farming",
-    text: `<p><strong>I</strong> &nbsp;In cities around the world, an unusual trend is taking hold. Instead of fields and farmland, some people are growing vegetables, herbs, and even fruit on rooftops, in empty lots, and in repurposed warehouses. This movement, known as urban farming, is changing the way city dwellers think about where their food comes from. In cities like Singapore, New York, and Amsterdam, urban farms are now supplying fresh produce directly to local restaurants and supermarkets.</p>
-<p><strong>II</strong> &nbsp;Urban farming takes many different forms. Some farmers use soil in raised beds on rooftops, while others use a system called hydroponics, in which plants are grown in water enriched with nutrients, without any soil at all. Vertical farms -- where plants grow in stacked layers under artificial lighting -- allow even more crops to be produced in a small area. These systems can produce food year-round, regardless of the weather outside.</p>
-<p><strong>III</strong> &nbsp;Supporters of urban farming argue that it has significant benefits. Because the food is grown close to where it will be eaten, it does not need to travel long distances, reducing carbon emissions from transportation. Fresh produce that goes from farm to table within hours is also more nutritious than food that has spent days in transit. In addition, urban farms can be built on unused land, making productive use of space that would otherwise go to waste.</p>
-<p><strong>IV</strong> &nbsp;However, urban farming is not without its critics. Setting up a vertical farm or hydroponic system requires a large initial investment. The artificial lighting used in indoor farms consumes a great deal of electricity, which raises concerns about environmental impact. Critics also argue that urban farms can only ever produce a fraction of the food needed to feed a city, making them an interesting supplement but not a realistic replacement for traditional agriculture.</p>
-<p><strong>V</strong> &nbsp;Despite these limitations, many city planners see urban farming as an important part of a more sustainable future. As one expert explained: "We are not trying to replace the countryside. We are trying to make cities smarter, greener, and more self-sufficient."</p>`,
+    text: `<p><strong>I</strong> &nbsp;In cities around the world, people are growing vegetables and fruit in unusual places. Instead of fields, they use rooftops, empty buildings, and small plots of unused land. This is called urban farming. Cities like Singapore, New York, and Amsterdam now have urban farms that sell fresh food to local shops and restaurants.</p>
+<p><strong>II</strong> &nbsp;There are different ways to grow food in cities. Some farmers use soil in raised beds on rooftops. Others use a method called hydroponics, where plants grow in water mixed with minerals, without any soil at all. Some farms grow plants in tall shelves under special lights. These indoor farms can grow food all year, even in winter.</p>
+<p><strong>III</strong> &nbsp;Urban farming has many advantages. Because the food is grown close to where it is eaten, it does not need to travel far. This means less pollution from trucks and planes. Food that travels less also stays fresher and contains more nutrients. Urban farms can also use empty land that would otherwise be wasted.</p>
+<p><strong>IV</strong> &nbsp;However, urban farming also has problems. Setting up an indoor farm costs a lot of money. The special lights that plants need use a large amount of electricity. Some critics say that urban farms can only ever provide a small amount of the food a city needs. They see it as a nice idea, but not a complete solution.</p>
+<p><strong>V</strong> &nbsp;Despite these problems, many city planners believe urban farming is an important part of the future. As one expert explained: "We are not trying to replace farms in the countryside. We just want to make cities smarter and more independent when it comes to food."</p>`,
     qs: [
       {q:"What is urban farming? (paragraph I)", type:"mc", opts:["A traditional method of farming in the countryside","Growing food in cities on rooftops, empty lots, and warehouses","A government programme to reduce food prices","A new type of supermarket selling local food"], ans:1, explain:"Paragraph I defines urban farming as growing vegetables, herbs, and fruit on rooftops, in empty lots, and in repurposed warehouses in cities."},
       {q:"What is hydroponics? (paragraph II)", type:"mc", opts:["A type of rooftop soil farming","A system using artificial lighting only","Growing plants in water enriched with nutrients, without soil","A method for growing fruit trees in cities"], ans:2, explain:"Paragraph II explains that hydroponics is a system where plants are grown in water enriched with nutrients, without any soil."},
@@ -1190,11 +1218,11 @@ const PASSAGES = [
   },
   {
     title: "The history of chocolate",
-    text: `<p><strong>I</strong> &nbsp;Today, chocolate is one of the most popular foods in the world. But its history stretches back more than 3,000 years to the ancient civilisations of Central America. The Maya and Aztec peoples used cacao beans -- the seeds of the cacao tree -- to make a bitter, spicy drink that was very different from the sweet chocolate we know today. This drink was considered so valuable that cacao beans were even used as a form of currency.</p>
-<p><strong>II</strong> &nbsp;When Spanish explorers arrived in the Americas in the sixteenth century, they encountered this mysterious drink and brought cacao beans back to Europe. At first, Europeans also consumed it as a drink, but they added sugar and removed the spices to suit their own tastes. By the seventeenth century, chocolate houses -- similar to today's coffee shops -- had become fashionable meeting places in cities like London and Paris.</p>
-<p><strong>III</strong> &nbsp;The transformation of chocolate from liquid to solid form came in the nineteenth century, when manufacturers discovered how to extract cocoa butter from cacao and mix it with sugar and milk to create solid bars. This made chocolate cheaper and easier to transport and store. Mass production made it available to ordinary people for the first time, and demand grew rapidly across Europe and North America.</p>
-<p><strong>IV</strong> &nbsp;Today, the chocolate industry is worth billions of dollars, but it faces serious challenges. Most of the world's cacao is grown in West Africa, where farmers often receive very little money for their work. Reports of child labour on some cacao farms have led to calls for greater regulation and for consumers to choose fairly traded chocolate. Climate change is also threatening cacao crops, as the trees require specific conditions of temperature and rainfall to grow well.</p>
-<p><strong>V</strong> &nbsp;Despite these concerns, global demand for chocolate continues to rise, particularly in emerging markets in Asia. Researchers are working to develop new varieties of cacao tree that are more resistant to disease and climate change, in the hope of securing the future of this beloved food.</p>`,
+    text: `<p><strong>I</strong> &nbsp;Today, chocolate is one of the most popular foods in the world. But it was not always the sweet treat we know today. More than 3,000 years ago, people in Central America used cacao beans to make a bitter, spicy drink. This drink was very important to the Maya and Aztec peoples. Cacao beans were so valuable that people used them as money.</p>
+<p><strong>II</strong> &nbsp;When Spanish travellers arrived in the Americas in the 1500s, they tasted this drink and brought cacao beans back to Europe. Europeans liked the taste but added sugar and removed the spices. By the 1600s, special shops that served hot chocolate had become fashionable in cities like London and Paris. People went there to meet friends and talk.</p>
+<p><strong>III</strong> &nbsp;In the 1800s, manufacturers learned how to make solid chocolate bars. They mixed cacao with sugar and milk to create the chocolate we eat today. This made chocolate cheaper and easier to transport. For the first time, ordinary people could afford to buy and enjoy it, and it quickly became very popular across Europe.</p>
+<p><strong>IV</strong> &nbsp;Today, the chocolate industry is worth billions of dollars. But it faces serious problems. Most cacao is grown in West Africa, where farmers earn very little money. There have also been reports of children working on cacao farms. Climate change is another problem, because cacao trees need specific weather conditions to grow well.</p>
+<p><strong>V</strong> &nbsp;Despite these challenges, people around the world continue to love chocolate. Scientists are working to develop new types of cacao trees that can grow in changing weather conditions. The goal is to make sure chocolate remains available for future generations to enjoy.</p>`,
     qs: [
       {q:"What do we learn about how the Maya and Aztecs used cacao? (paragraph I)", type:"mc", opts:["They ate it as a solid food","They used it to make a sweet drink","They used it as a form of currency and to make a bitter drink","They traded it with European explorers"], ans:2, explain:"Paragraph I says cacao beans were used to make a bitter, spicy drink AND were used as a form of currency."},
       {q:"How did Europeans change the chocolate drink? (paragraph II) COMPLETE THE SENTENCE: They added ...", type:"mc", opts:["spices and cacao butter","sugar and removed the spices","milk and cacao beans","flavours and more water"], ans:1, explain:"Paragraph II says Europeans added sugar and removed the spices to suit their own tastes."},
@@ -1205,11 +1233,11 @@ const PASSAGES = [
   },
   {
     title: "Left-handed people",
-    text: `<p><strong>I</strong> &nbsp;Approximately ten percent of the world's population is left-handed. For most of human history, left-handed people were treated with suspicion. In many cultures, the left hand was considered unlucky or even evil. Children who showed a preference for their left hand were often forced to use their right hand instead. This practice has now largely disappeared, but its effects can still be seen in language: in English, the word "sinister" comes from the Latin word for "left".</p>
-<p><strong>II</strong> &nbsp;Scientists are still not entirely sure why some people are left-handed. Research suggests that handedness is partly determined by genetics -- it tends to run in families -- but the relationship is complex. If both parents are left-handed, their children are more likely to be left-handed too, but it is not guaranteed. Environmental factors during pregnancy may also play a role.</p>
-<p><strong>III</strong> &nbsp;Left-handed people often face practical challenges in a world designed for right-handers. Everyday objects such as scissors, computer mice, and even musical instruments like guitars are typically built for right-handed use. Left-handed students sometimes struggle with writing because their hand moves over what they have just written, smudging the ink. Some schools now provide special desks and materials for left-handed pupils.</p>
-<p><strong>IV</strong> &nbsp;Despite these difficulties, there is evidence that left-handed people may have certain advantages. Some studies suggest that left-handers tend to perform better in tasks that require creative thinking, as they may use both sides of the brain more equally. Left-handed athletes are also considered to have an advantage in sports such as tennis and fencing, because their opponents are less used to playing against them.</p>
-<p><strong>V</strong> &nbsp;Famous left-handers include Leonardo da Vinci, Beethoven, and several world leaders. While being left-handed was once seen as a disadvantage, today many left-handed people wear it as a badge of pride. Every year on August 13th, the world celebrates International Left-Handers Day to raise awareness of the challenges and strengths of left-handed people.</p>`,
+    text: `<p><strong>I</strong> &nbsp;About ten percent of people in the world are left-handed. For most of history, left-handed people were treated badly. In many cultures, the left hand was seen as unlucky or even evil. Children who used their left hand were often forced to use their right hand instead. Even today, the English word "sinister", which means dangerous or evil, comes from the Latin word for "left".</p>
+<p><strong>II</strong> &nbsp;Scientists are not completely sure why some people are left-handed. Research suggests that it partly runs in families. If both parents are left-handed, their children are more likely to be left-handed too. However, this is not always the case. The conditions before a baby is born may also play a role.</p>
+<p><strong>III</strong> &nbsp;Left-handed people often face practical problems in a world built for right-handers. Scissors, computer mice, and many other everyday objects are designed for right-handed use. Left-handed students sometimes find writing difficult because their hand moves over what they have just written and smears the ink. Some schools now provide special equipment for left-handed pupils.</p>
+<p><strong>IV</strong> &nbsp;Despite these difficulties, left-handed people may have some advantages. Some studies suggest that left-handers are better at creative thinking. In sports like tennis and boxing, left-handed players often surprise their opponents because most people are not used to playing against them. This can give them an important advantage in competition.</p>
+<p><strong>V</strong> &nbsp;Many famous people were left-handed, including Leonardo da Vinci and Beethoven. Today, being left-handed is seen as something special rather than something to be ashamed of. Every year on August 13th, the world celebrates International Left-Handers Day to recognise the strengths of left-handed people.</p>`,
     qs: [
       {q:"What do we learn about left-handed people in history? (paragraph I)", type:"mc", opts:["They were considered lucky in most cultures","They were treated with suspicion and forced to use their right hand","They made up half of the population","They had their own special language"], ans:1, explain:"Paragraph I says left-handed people were treated with suspicion and children showing preference for the left hand were often forced to use their right."},
       {q:"What does research say about the cause of left-handedness? (paragraph II)", type:"mc", opts:["It is caused entirely by genetics","It is caused entirely by environmental factors","It is partly genetic but also influenced by other factors","It is randomly distributed in the population"], ans:2, explain:"Paragraph II says handedness is partly determined by genetics but the relationship is complex, and environmental factors may also play a role."},
@@ -1220,11 +1248,11 @@ const PASSAGES = [
   },
   {
     title: "Working from home",
-    text: `<p><strong>I</strong> &nbsp;Before 2020, working from home was relatively uncommon. Most employees were expected to commute to an office five days a week, and remote work was seen as a privilege available only to a small number of professionals. All of that changed dramatically when the global health crisis of 2020 forced millions of workers to stay at home. Overnight, organisations that had previously resisted remote work were required to adapt.</p>
-<p><strong>II</strong> &nbsp;Many workers discovered unexpected benefits. Without a daily commute, they saved both time and money. Being at home made it easier to fit personal responsibilities around work, such as caring for children or elderly relatives. Surveys conducted during this period found that a significant proportion of workers reported higher levels of satisfaction and productivity when working from home.</p>
-<p><strong>III</strong> &nbsp;However, not everyone found the experience positive. For some workers, particularly those in smaller homes or with young children, it was difficult to find a quiet space to concentrate. The boundary between work and personal life became blurred, with many employees finding it hard to "switch off" at the end of the day. Social isolation was also a significant concern, as the informal conversations and connections that take place naturally in an office environment were lost.</p>
-<p><strong>IV</strong> &nbsp;As the situation returned to normal, many companies adopted a "hybrid" model, in which employees split their time between the office and home. This approach aimed to combine the flexibility of remote work with the social and creative benefits of working together in person. However, opinions on the ideal balance remain divided. Some employees prefer to be in the office most of the time, while others strongly prefer working remotely.</p>
-<p><strong>V</strong> &nbsp;The long-term effects of this shift in working patterns are still unclear. What seems certain is that the traditional expectation of working in an office from nine to five, five days a week, will never fully return. As one business leader observed: "The way we work has changed permanently. The challenge now is to make the best of that change."</p>`,
+    text: `<p><strong>I</strong> &nbsp;Before 2020, most people went to an office to work every day. Working from home was unusual and was seen as a privilege for a small number of people. This changed suddenly in 2020, when a global health crisis forced millions of workers to stay at home. Almost overnight, companies that had never allowed remote work had to find a way to make it work.</p>
+<p><strong>II</strong> &nbsp;Many workers were surprised to discover that working from home had real benefits. Without a long journey to work every day, they saved both time and money. They also found it easier to take care of family members and manage their daily lives. Many workers said they felt happier and were actually more productive working from home.</p>
+<p><strong>III</strong> &nbsp;However, not everyone had a good experience. Some workers found it very hard to concentrate at home, especially in small apartments or with young children around. Many people also found it difficult to stop working at the end of the day. Without the clear separation between work and home, some people felt stressed and tired all the time.</p>
+<p><strong>IV</strong> &nbsp;When the crisis ended, many companies chose a middle option. Instead of working only at home or only in the office, employees now split their time between the two. This is called a "hybrid" model. Some people prefer working in the office most of the time. Others strongly prefer to work from home. Finding the right balance is still a challenge for many companies.</p>
+<p><strong>V</strong> &nbsp;It seems clear that the old way of working in an office five days a week will never fully return. As one business leader said: "The way we work has changed for good. The challenge now is to make the most of that change."</p>`,
     qs: [
       {q:"What was the situation before 2020? (paragraph I)", type:"mc", opts:["Most workers already worked from home","Remote work was very common","Working from home was seen as a privilege for a small number","Companies supported remote work widely"], ans:2, explain:"Paragraph I says before 2020, remote work was seen as a privilege available only to a small number of professionals."},
       {q:"What benefits did workers discover when working from home? (paragraph II) PUT A [OK] BY THE TWO CORRECT ANSWERS.", type:"multi2", opts:["They saved time and money without commuting","They earned higher salaries","Many reported higher satisfaction and productivity","They worked fewer hours"], ans:[0,2], explain:"Paragraph II mentions saving time and money from no commute AND higher levels of satisfaction and productivity as benefits."},
@@ -1235,11 +1263,11 @@ const PASSAGES = [
   },
   {
     title: "The importance of bees",
-    text: `<p><strong>I</strong> &nbsp;Bees are among the most important creatures on Earth. As pollinators, they play a vital role in the reproduction of flowering plants. When a bee visits a flower to collect nectar, it picks up tiny grains of pollen on its body. As it moves from flower to flower, this pollen is transferred, allowing plants to produce seeds and fruit. It is estimated that bees are responsible for pollinating about one third of all the food that humans eat.</p>
-<p><strong>II</strong> &nbsp;Despite their importance, bee populations around the world have been declining at an alarming rate. Scientists have identified several causes. The widespread use of pesticides in modern farming kills not only harmful insects but also bees. The destruction of natural habitats, such as wildflower meadows, removes the sources of food that bees depend on. Climate change is also disrupting the timing of flowering plants, meaning that bees sometimes arrive at flowers before or after the nectar is available.</p>
-<p><strong>III</strong> &nbsp;The loss of bees would have serious consequences for agriculture and food security. Without sufficient pollination, the production of many fruits, vegetables, and nuts would decrease dramatically. Some economists have estimated the value of bee pollination to global agriculture at hundreds of billions of dollars per year. Several countries have already begun to see reduced harvests of certain crops as bee populations fall.</p>
-<p><strong>IV</strong> &nbsp;In response to this crisis, governments and conservation organisations have introduced a range of measures. Some countries have banned or restricted the use of certain pesticides that are known to harm bees. Many cities have created "bee corridors" -- connected green spaces where wildflowers grow -- to give bees safe routes through urban areas. Beekeeping has also grown in popularity, with urban beehives appearing on rooftops across the world.</p>
-<p><strong>V</strong> &nbsp;Individuals can also contribute to protecting bees. Planting bee-friendly flowers, avoiding pesticides in gardens, and buying locally produced honey all help to support bee populations. As one conservation expert explained: "We do not need to wait for governments to act. Every garden, every balcony, and every window box can make a difference."</p>`,
+    text: `<p><strong>I</strong> &nbsp;Bees are among the most important insects on Earth. When a bee visits a flower to collect nectar, it carries tiny grains of pollen on its body. As it moves from flower to flower, the pollen is transferred. This process, called pollination, allows plants to produce fruit and seeds. Scientists estimate that bees help produce about one third of all the food that humans eat.</p>
+<p><strong>II</strong> &nbsp;Unfortunately, the number of bees in the world is falling. Scientists have identified several reasons for this. Pesticides used in farming kill not only harmful insects but also bees. The destruction of wild areas, such as meadows full of flowers, removes the food that bees depend on. Climate change is also affecting bees by changing when flowers bloom.</p>
+<p><strong>III</strong> &nbsp;If bees disappeared, the results would be very serious. Without pollination, many fruits, vegetables, and nuts would no longer grow. Farmers would struggle to produce enough food. Scientists have calculated that the value of bee pollination to world farming is hundreds of billions of dollars every year. The loss of bees would be a disaster for food production.</p>
+<p><strong>IV</strong> &nbsp;Governments are taking action to protect bees. Some countries have banned or restricted the use of pesticides that harm bees. Many cities have created green corridors — connected areas of wild flowers — to give bees safe paths through urban areas. Keeping bees has also become more popular, with beehives appearing on rooftops in many cities.</p>
+<p><strong>V</strong> &nbsp;Individuals can also make a difference. Planting bee-friendly flowers in gardens or on balconies, avoiding pesticides, and buying local honey are all simple steps. As one expert said: "We do not need to wait for governments to act. Every garden, every balcony, and every window box can help."</p>`,
     qs: [
       {q:"Why are bees important? (paragraph I)", type:"mc", opts:["They produce all the world's honey","They pollinate about one third of all the food humans eat","They protect flowers from harmful insects","They carry water to plants in dry areas"], ans:1, explain:"Paragraph I says bees are responsible for pollinating about one third of all the food that humans eat."},
       {q:"What are TWO reasons bee populations are declining? (paragraph II) PUT A [OK] BY THE TWO CORRECT ANSWERS.", type:"multi2", opts:["Pesticides used in farming kill bees","Bees are being over-harvested for honey","The destruction of natural habitats removes bees' food","Bees are being moved to cities"], ans:[0,2], explain:"Paragraph II identifies pesticide use AND the destruction of natural habitats as two main causes of declining bee populations."},
@@ -1250,11 +1278,11 @@ const PASSAGES = [
   },
   {
     title: "Social media and young people",
-    text: `<p><strong>I</strong> &nbsp;Social media platforms have transformed the way young people communicate, consume information, and present themselves to the world. Teenagers today spend an average of three to four hours per day on platforms such as Instagram, TikTok, and YouTube. While these tools offer genuine benefits -- staying in touch with friends, discovering new interests, and building communities -- researchers and parents have raised concerns about their impact on mental health and wellbeing.</p>
-<p><strong>II</strong> &nbsp;One area of concern is the effect of social media on self-image. Many platforms are built around sharing photographs and videos, encouraging users to present the best version of themselves. When young people constantly see images of others looking attractive, successful, or happy, they may feel inadequate by comparison. Studies have found a link between heavy social media use and increased levels of anxiety and low self-esteem, particularly among teenage girls.</p>
-<p><strong>III</strong> &nbsp;Sleep is another area affected by social media use. Many young people check their phones late at night, and the blue light emitted by screens disrupts the production of melatonin, a hormone that helps the body prepare for sleep. Research has shown that teenagers who use social media heavily at night tend to sleep less and report poorer quality sleep than those who do not. Poor sleep, in turn, affects concentration, mood, and academic performance.</p>
-<p><strong>IV</strong> &nbsp;Some countries have begun to take action. Australia has introduced a law banning children under the age of sixteen from using social media platforms. In the United Kingdom, the government has given regulators new powers to fine companies whose platforms cause harm to children. Several schools have introduced total bans on mobile phones during the school day to help students focus on learning.</p>
-<p><strong>V</strong> &nbsp;Many experts argue that the responsibility should not fall entirely on young people themselves. Social media companies design their platforms to be as addictive as possible, using algorithms that keep users scrolling for as long as possible. As one researcher put it: "Telling a teenager to simply use their phone less is like telling someone to eat less in a world full of fast food restaurants. The environment itself needs to change."</p>`,
+    text: `<p><strong>I</strong> &nbsp;Young people today spend a lot of time on social media. On average, teenagers use platforms like Instagram, TikTok, and YouTube for three to four hours every day. Social media has many benefits: it helps young people stay in touch with friends, discover new interests, and join communities of people who share the same hobbies. However, researchers are worried about its effects on young people's mental health.</p>
+<p><strong>II</strong> &nbsp;One area of concern is how social media affects the way young people see themselves. These platforms encourage users to share their best photos and most exciting moments. When teenagers constantly see photos of others looking happy, attractive, and successful, they can begin to feel bad about their own lives. Studies have found a link between heavy social media use and feelings of anxiety and low confidence, particularly among teenage girls.</p>
+<p><strong>III</strong> &nbsp;Sleep is another area that is affected. Many young people check their phones late at night. The light from screens makes it harder for the body to prepare for sleep. Research shows that teenagers who use social media a lot at night sleep fewer hours and report worse quality sleep. Poor sleep then makes it harder to concentrate, study, and manage emotions during the day.</p>
+<p><strong>IV</strong> &nbsp;Some governments have begun to take action. Australia has introduced a law that bans children under sixteen from using social media. In the United Kingdom, regulators now have the power to fine companies whose platforms harm children. Many schools have also banned mobile phones during school hours to help students focus on their studies.</p>
+<p><strong>V</strong> &nbsp;Many experts argue that it is not fair to blame young people for spending too much time on social media. These platforms are designed to be as engaging as possible, making it very hard to stop using them. As one researcher explained: "Telling a teenager to simply use their phone less is not realistic. The platforms themselves need to change."</p>`,
     qs: [
       {q:"What do we learn about how teenagers use social media? (paragraph I)", type:"mc", opts:["They use it only to communicate with family","They spend an average of three to four hours per day on it","They mainly use it for school projects","They prefer older platforms like Facebook"], ans:1, explain:"Paragraph I states that teenagers today spend an average of three to four hours per day on social media platforms."},
       {q:"How does social media affect self-image? (paragraph II)", type:"mc", opts:["It helps young people feel more confident","It has no effect on how young people feel about themselves","It may make young people feel inadequate by comparison to others","It encourages young people to avoid photographs"], ans:2, explain:"Paragraph II says when young people constantly see images of others looking attractive and successful, they may feel inadequate by comparison."},
@@ -1265,11 +1293,11 @@ const PASSAGES = [
   },
   {
     title: "The Amazon rainforest",
-    text: `<p><strong>I</strong> &nbsp;The Amazon rainforest is the largest tropical forest on Earth. It covers an area of approximately 5.5 million square kilometres, spreading across nine countries in South America, with the majority located in Brazil. The Amazon is home to an extraordinary variety of life: it contains around ten percent of all the species of plants and animals in the world. Scientists believe that there are still millions of species in the Amazon that have not yet been discovered or named.</p>
-<p><strong>II</strong> &nbsp;The Amazon plays a vital role in regulating the global climate. Its trees absorb enormous quantities of carbon dioxide from the atmosphere, helping to slow the pace of climate change. The forest also releases vast amounts of water vapour into the air, influencing rainfall patterns far beyond its own borders. Some scientists describe the Amazon as the "lungs of the Earth", though others argue this comparison is not entirely accurate.</p>
-<p><strong>III</strong> &nbsp;Despite its importance, the Amazon has been shrinking at an alarming rate. Deforestation -- the clearing of trees for farming, cattle ranching, and mining -- has destroyed approximately twenty percent of the original forest over the past fifty years. When trees are cut down or burned, the carbon stored in them is released back into the atmosphere, making deforestation a major contributor to global warming.</p>
-<p><strong>IV</strong> &nbsp;Indigenous communities have lived in the Amazon for thousands of years. They possess detailed knowledge of the forest's plants and animals, and many scientists believe that protecting indigenous land rights is one of the most effective strategies for conserving the rainforest. Studies have shown that areas of the Amazon under indigenous control tend to have lower rates of deforestation than other areas.</p>
-<p><strong>V</strong> &nbsp;International efforts to protect the Amazon have had mixed results. Some countries have introduced laws to reduce deforestation, and satellite technology now allows authorities to detect illegal clearing in remote areas. However, enforcement remains difficult, and economic pressures on local communities continue to drive deforestation. Many environmentalists argue that wealthy nations, which have historically caused most of the world's carbon emissions, have a responsibility to help fund the protection of forests like the Amazon.</p>`,
+    text: `<p><strong>I</strong> &nbsp;The Amazon rainforest is the largest tropical forest on Earth. It covers about 5.5 million square kilometres across nine countries in South America, mostly in Brazil. The Amazon is home to an incredible variety of animals and plants. It contains around ten percent of all the species of living things in the world. Many species there have not yet been discovered by scientists.</p>
+<p><strong>II</strong> &nbsp;The Amazon plays a very important role in the health of our planet. Its trees absorb large amounts of carbon dioxide from the air, which helps slow down climate change. The forest also releases huge amounts of water into the atmosphere, which affects rainfall in many parts of the world. Some scientists call the Amazon the "lungs of the Earth" because of how important it is.</p>
+<p><strong>III</strong> &nbsp;Despite its importance, the Amazon is shrinking. Trees are being cut down or burned to make space for farms, cattle, and mines. About twenty percent of the original forest has already been destroyed in the past fifty years. When trees are cut down, the carbon stored inside them is released into the air, which makes climate change worse.</p>
+<p><strong>IV</strong> &nbsp;Indigenous communities have lived in the Amazon for thousands of years. They know the forest very well and understand how to protect it. Studies have shown that areas of the Amazon under the control of indigenous peoples are much less likely to be destroyed. Many scientists believe that protecting the rights of these communities is one of the most effective ways to save the forest.</p>
+<p><strong>V</strong> &nbsp;International efforts to protect the Amazon have had some success, but the problem continues. Satellites can now detect illegal cutting in remote areas, and some countries have introduced new laws to reduce deforestation. Many environmental groups argue that wealthy countries, which have caused most of the world's pollution, have a responsibility to help pay for the protection of forests like the Amazon.</p>`,
     qs: [
       {q:"What do we learn about the Amazon rainforest in paragraph I?", type:"mc", opts:["It is located entirely in Brazil","It contains about ten percent of all species of plants and animals on Earth","It has been fully explored by scientists","It covers most of South America"], ans:1, explain:"Paragraph I states the Amazon contains around ten percent of all the species of plants and animals in the world."},
       {q:"Why is the Amazon described as the 'lungs of the Earth'? (paragraph II)", type:"mc", opts:["Because it produces oxygen for all animals to breathe","Because it absorbs carbon dioxide and releases water vapour, regulating climate","Because it is located in the centre of the planet","Because it contains the world's largest rivers"], ans:1, explain:"Paragraph II explains the Amazon absorbs carbon dioxide and releases water vapour, influencing climate -- which is why it is called the 'lungs of the Earth'."},
@@ -1446,7 +1474,7 @@ function refreshHome() {
 // VOCABULARY QUIZ
 // =======================================================
 
-let vQuestions = [], vIdx = 0, vScore = 0, lastVocabList = 'ALL';
+let vQuestions = [], vIdx = 0, vScore = 0, lastVocabList = 'ALL', retryQuestions = [];
 
 function showVocabMenu() {
   renderVocabMenu();
@@ -1465,6 +1493,7 @@ function startVocab(list) {
     const distractors = shuffle(allPool.filter(x => x.m !== item.m)).slice(0, 3).map(x => x.m);
     return { word: item.w, pos: item.pos || '', fam: item.fam || '', correct: item.m, opts: shuffle([item.m, ...distractors]), heb: item.h || '', ex: item.ex || '', translit: item.t || '' };
   });
+  retryQuestions = vQuestions.slice(); // save for retry
   vIdx = 0; vScore = 0; quizHistory = [];
   $('vocab-menu').classList.add('hidden');
   $('vocab-done').classList.add('hidden');
@@ -1482,6 +1511,7 @@ function startWeakQuiz() {
     const distractors = shuffle(allPool.filter(x => x.m !== item.m)).slice(0, 3).map(x => x.m);
     return { word: item.w, pos: item.pos || '', fam: item.fam || '', correct: item.m, opts: shuffle([item.m, ...distractors]), heb: item.h || '', ex: item.ex || '', translit: item.t || '' };
   });
+  retryQuestions = vQuestions.slice(); // save for retry
   vIdx = 0; vScore = 0; quizHistory = [];
   $('vocab-menu').classList.add('hidden');
   $('vocab-done').classList.add('hidden');
@@ -1544,12 +1574,16 @@ function answerVocab(chosen, el, correct, word) {
   quizHistory.push({word:word,correct:correct,chosen:chosen,heb:curQ2?curQ2.heb||'':'',translit:curQ2?curQ2.translit||'':'',meaning:correct});
   $('vq-score-live').textContent = 'Score: ' + vScore + '/' + (vIdx + 1);
   $('vq-next').classList.remove('hidden');
+  saveMidProgress(vScore, vIdx + 1);
 }
 
 function nextVocab() {
   vIdx++;
   if (vIdx >= vQuestions.length) {
+    clearMidProgress();
+    buildReviewList();
     recordScore('vocab', lastVocabList, vScore, vQuestions.length);
+    logEvent('quiz done', lastVocabList, vScore, vQuestions.length);
     $('vocab-quiz').classList.add('hidden');
     $('vocab-done').classList.remove('hidden');
     const pct = Math.round(vScore / vQuestions.length * 100);
@@ -1985,20 +2019,55 @@ function renderDictBookmarks() {
 var popupTimeout = null;
 
 function makePassageTappable(html) {
+  var allWords = getAllWords();
+  var vocabSet = {};
+  allWords.forEach(function(w) { vocabSet[w.w.toLowerCase()] = true; });
+  
+  function hasTranslation(word) {
+    var w = word.toLowerCase();
+    var stems = [w, w.replace(/s$/,''), w.replace(/es$/,''), w.replace(/ies$/,'y'),
+                 w.replace(/ed$/,''), w.replace(/ed$/,'e'),
+                 w.replace(/ing$/,''), w.replace(/ing$/,'e'),
+                 w.replace(/ly$/,''), w.replace(/er$/,''), w.replace(/ers$/,''),
+                 w.replace(/ment$/,''), w.replace(/tion$/,''), w.replace(/ness$/,'')];
+    return stems.some(function(s) { return vocabSet[s]; });
+  }
+
   return html.replace(/(<[^>]+>)|([A-Za-z]{3,})/g, function(match, tag, word) {
     if (tag) return tag;
-    return '<span class="tap-word" onclick="showWordPopup(event,\'' + word.toLowerCase() + '\')">' + word + '</span>';
+    var cls = hasTranslation(word) ? 'tap-word has-translation' : 'tap-word';
+    return '<span class="' + cls + '" onclick="showWordPopup(event,\'' + word.toLowerCase() + '\')">' + word + '</span>';
   });
 }
 
 function showWordPopup(e, word) {
   e.stopPropagation();
   var all = getAllWords();
-  var entry = all.find(function(x){
-    return x.w===word || x.w===word.replace(/s$/,'') || x.w===word.replace(/ed$/,'') || x.w===word.replace(/ing$/,'') || x.w===word.replace(/ly$/,'');
-  });
+  // Try exact match then common English word forms
+  var stems = [word,
+    word.replace(/s$/,''),
+    word.replace(/es$/,''),
+    word.replace(/ies$/,'y'),
+    word.replace(/ed$/,''),
+    word.replace(/ed$/,'e'),
+    word.replace(/ing$/,''),
+    word.replace(/ing$/,'e'),
+    word.replace(/ly$/,''),
+    word.replace(/ment$/,''),
+    word.replace(/tion$/,''),
+    word.replace(/ness$/,''),
+    word.replace(/ful$/,''),
+    word.replace(/er$/,''),
+    word.replace(/ers$/,'')
+  ];
+  var entry = null;
+  for (var si2=0; si2<stems.length; si2++) {
+    entry = all.find(function(x){ return x.w===stems[si2]; });
+    if (entry) break;
+  }
   var popup = $('word-popup');
-  if (!popup || !entry) { if(popup) popup.style.display='none'; return; }
+  if (!popup) return;
+  if (!entry) { popup.style.display='none'; return; }
   $('wp-word').textContent = entry.w;
   $('wp-translit').textContent = entry.t || '';
   $('wp-heb').textContent = entry.h || '';
@@ -2006,7 +2075,10 @@ function showWordPopup(e, word) {
   popup.style.display = 'block';
   popup.style.opacity = '1';
   popup.style.left = Math.min(e.clientX, window.innerWidth-240) + 'px';
-  popup.style.top = (e.clientY+24) + 'px';
+  // Position above the tap on mobile, below on desktop
+  var popH = 100;
+  var yPos = e.clientY > window.innerHeight/2 ? e.clientY - popH - 20 : e.clientY + 24;
+  popup.style.top = Math.max(8, yPos) + 'px';
   clearTimeout(popupTimeout);
   popupTimeout = setTimeout(function(){ popup.style.opacity='0'; setTimeout(function(){popup.style.display='none';},150); }, 4000);
 }
@@ -2335,6 +2407,7 @@ function openAdmin() {
 
 function confirmSwitch() {
   if (confirm('Switch user? You will need your PIN to log back in.')) {
+    try { localStorage.removeItem('moduleE_lastUser'); } catch(e) {}
     currentUser = '';
     DB = {history:[],missCount:{},lastDate:'',streak:0};
     showUserScreen();
