@@ -511,6 +511,16 @@ body {
 .dict-entry .de-en { font-size: 13px; color: var(--ink2); margin-top: 6px; }
 .dict-entry .de-ex { font-size: 12px; color: var(--ink3); font-style: italic; margin-top: 6px; }
 .dict-list-badge { font-size: 10px; background: var(--accent-bg); color: var(--accent); padding: 2px 6px; border-radius: 8px; font-weight: 600; margin-left: 6px; }
+
+.translate-btn { background: #fff; border: 1.5px solid #4285f4; border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer; color: #4285f4; font-weight: 600; margin-top: 8px; display: inline-flex; align-items: center; gap: 5px; }
+.translate-btn:hover { background: #e8f0fe; }
+.translate-panel { display: none; margin-top: 8px; padding: 12px 14px; border-radius: 10px; background: #e8f0fe; border: 1.5px solid #4285f4; }
+.translate-panel.show { display: block; }
+.translate-result { font-size: 18px; font-weight: 700; color: #1a237e; direction: rtl; text-align: right; margin-bottom: 6px; }
+.translate-original { font-size: 12px; color: #555; margin-bottom: 8px; }
+.translate-link { font-size: 12px; color: #4285f4; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+.translate-link:hover { text-decoration: underline; }
+.translate-loading { font-size: 13px; color: #4285f4; }
 </style>
 </head>
 <body>
@@ -567,7 +577,7 @@ body {
   <div style="text-align:right">
     <button class="active-user-pill" id="user-pill" onclick="showUserScreen()">[user] --</button>
   </div>
-  <span class="version-tag">v1.6 - 2026-10-06</span>
+  <span class="version-tag">v1.8 - 2026-10-06</span>
 </div>
 
 <div class="shell">
@@ -578,6 +588,7 @@ body {
     <button class="tab" onclick="switchTab('vocab')">Vocab</button>
     <button class="tab" onclick="switchTab('reading')">Reading</button>
     <button class="tab" onclick="switchTab('flash')">Cards</button>
+    <button class="tab" onclick="switchTab('map')">Word Map</button>
     <button class="tab" onclick="switchTab('dict')">Dictionary</button>
     <button class="tab" onclick="switchTab('progress')">Progress</button>
   </div>
@@ -674,6 +685,10 @@ body {
           <div id="vq-heb-m" style="font-size:15px;color:#5a3a00;direction:rtl;margin-bottom:8px"></div>
           <button id="vq-ex-btn" onclick="tP($('vq-ex-text'))" style="font-size:12px;color:#7a5200;background:none;border:none;cursor:pointer;text-align:right;width:100%;padding:0;display:none">▼ דוגמה</button>
           <div id="vq-ex-text" style="display:none;font-size:12px;color:#666;font-style:italic;margin-top:4px;direction:ltr;text-align:left"></div>
+        </div>
+        <div style="margin-top:8px">
+          <button class="translate-btn" id="vq-translate-btn" onclick="translateWord(vQuestions[vIdx]?vQuestions[vIdx].word:'', 'vq-translate-panel', this)">&#127760; Translate</button>
+          <div class="translate-panel" id="vq-translate-panel"></div>
         </div>
         <p class="q-pos" id="vq-pos"></p>
         <p class="q-prompt">Choose the correct meaning:</p>
@@ -814,6 +829,7 @@ body {
         <div class="fc-meaning" id="fc-meaning"></div>
         <div class="fc-tap" id="fc-tap">Tap to reveal meaning</div>
         <div id="fc-heb-area" style="width:100%;margin-top:12px;text-align:center"></div>
+        <div id="fc-translate-area" style="margin-top:6px;text-align:center"></div>
       </div>
       <div class="nav-row">
         <button class="btn" onclick="prevCard()">← Prev</button>
@@ -822,6 +838,19 @@ body {
       </div>
     </div>
 
+  </div>
+
+  <!-- ============================================
+       WORD MAP TAB (v1.8)
+  ============================================ -->
+  <div id="tab-map" class="hidden">
+    <div class="card">
+      <p class="section-label">Word map</p>
+      <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap" id="map-list-btns"></div>
+      <div id="word-map-stats"></div>
+      <div id="word-map-detail" style="display:none"></div>
+      <div id="word-map-content" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:8px"></div>
+    </div>
   </div>
 
   <!-- ============================================
@@ -905,6 +934,62 @@ function retryVocab() {
   $('vocab-done').classList.add('hidden');
   $('vocab-quiz').classList.remove('hidden');
   renderVocab();
+}
+
+
+// ================================================================
+// INLINE TRANSLATION (MyMemory API - free, no key needed)
+// ================================================================
+var translateCache = {};
+
+function translateWord(text, panelId, btnEl) {
+  var panel = document.getElementById(panelId);
+  if (!panel) return;
+
+  // Toggle off if already showing
+  if (panel.classList.contains('show')) {
+    panel.classList.remove('show');
+    return;
+  }
+
+  // Show cached result instantly
+  if (translateCache[text]) {
+    renderTranslation(panel, text, translateCache[text]);
+    panel.classList.add('show');
+    return;
+  }
+
+  // Show loading
+  panel.innerHTML = '<div class="translate-loading">Translating...</div>';
+  panel.classList.add('show');
+  if (btnEl) btnEl.style.opacity = '0.6';
+
+  // Call MyMemory free translation API (English to Hebrew)
+  var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=en|he';
+
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var translated = data.responseData && data.responseData.translatedText ? data.responseData.translatedText : '';
+      if (!translated || translated.toLowerCase() === text.toLowerCase()) {
+        translated = '(translation not available)';
+      }
+      translateCache[text] = translated;
+      renderTranslation(panel, text, translated);
+      if (btnEl) btnEl.style.opacity = '1';
+    })
+    .catch(function() {
+      panel.innerHTML = '<div class="translate-loading" style="color:var(--red)">Could not translate. Check your connection.</div>' +
+        '<a class="translate-link" href="https://translate.google.com/?sl=en&tl=he&text=' + encodeURIComponent(text) + '&op=translate" target="_blank">Open in Google Translate</a>';
+      if (btnEl) btnEl.style.opacity = '1';
+    });
+}
+
+function renderTranslation(panel, original, translated) {
+  panel.innerHTML =
+    '<div class="translate-result" dir="rtl">' + translated + '</div>' +
+    '<div class="translate-original">' + original + '</div>' +
+    '<a class="translate-link" href="https://translate.google.com/?sl=en&tl=he&text=' + encodeURIComponent(original) + '&op=translate" target="_blank">&#127760; Open in Google Translate</a>';
 }
 
 function tP(el) {
@@ -1382,20 +1467,21 @@ function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
 function $(id) { return document.getElementById(id); }
 
 function switchTab(name) {
-  ['home','vocab','reading','flash','dict','progress'].forEach(t => {
+  ['home','vocab','reading','flash','map','dict','progress'].forEach(t => {
     $('tab-'+t).classList.add('hidden');
     document.querySelectorAll('.tab').forEach((el, i) => {
       el.classList.remove('active');
     });
   });
   $('tab-'+name).classList.remove('hidden');
-  const tabs = ['home','vocab','reading','flash','dict','progress'];
+  const tabs = ['home','vocab','reading','flash','map','dict','progress'];
   document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
   if (name === 'home') refreshHome();
   if (name === 'progress') refreshProgress();
   if (name === 'reading') showReadingMenu();
   if (name === 'vocab') showVocabMenu();
   if (name === 'flash') { renderFlashMenu(); $('flash-menu').classList.remove('hidden'); $('flash-active').classList.add('hidden'); }
+  if (name === 'map') { initWordMap(); }
   if (name === 'dict') { renderDictBookmarks(); var di = $('dict-input'); if(di){di.value='';} var dr=$('dict-results');if(dr)dr.innerHTML=''; }
 }
 
@@ -1544,6 +1630,9 @@ function renderVocab() {
   // Populate Hebrew panel
   var vqHeb = $('vq-heb-panel');
   if (vqHeb) vqHeb.style.display = 'none';
+  // Reset translate panel
+  var vqTr = $('vq-translate-panel');
+  if (vqTr) { vqTr.innerHTML = ''; vqTr.classList.remove('show'); }
   var curQ = vQuestions[vIdx];
   var elT = $('vq-heb-t'); if (elT) elT.textContent = curQ.translit || '';
   var elM = $('vq-heb-m'); if (elM) elM.textContent = curQ.heb || '';
@@ -1571,6 +1660,7 @@ function answerVocab(chosen, el, correct, word) {
   }
   // Track for review
   var curQ2 = vQuestions[vIdx];
+  markWordSeen(word, chosen===correct);
   quizHistory.push({word:word,correct:correct,chosen:chosen,heb:curQ2?curQ2.heb||'':'',translit:curQ2?curQ2.translit||'':'',meaning:correct});
   $('vq-score-live').textContent = 'Score: ' + vScore + '/' + (vIdx + 1);
   $('vq-next').classList.remove('hidden');
@@ -1791,6 +1881,14 @@ function renderFlash() {
     } else {
       ha.innerHTML = '';
     }
+  }
+  // Translate button
+  var ta = $('fc-translate-area');
+  if (ta && c.w) {
+    var fw = c.w.replace(/'/g, "\'");
+    var pid = 'fc-tr-' + fIdx;
+    ta.innerHTML = '<button class="translate-btn" onclick="translateWord(\'' + fw + '\', \'' + pid + '\', this)">&#127760; Translate</button>' +
+      '<div class="translate-panel" id="' + pid + '"></div>';
   }
 }
 
@@ -2072,6 +2170,9 @@ function showWordPopup(e, word) {
   $('wp-translit').textContent = entry.t || '';
   $('wp-heb').textContent = entry.h || '';
   $('wp-en').textContent = entry.m || '';
+  // Add translate link to popup
+  var wpLink = document.getElementById('wp-translate-link');
+  if (wpLink) wpLink.href = 'https://translate.google.com/?sl=en&tl=he&text=' + encodeURIComponent(entry.w) + '&op=translate';
   popup.style.display = 'block';
   popup.style.opacity = '1';
   popup.style.left = Math.min(e.clientX, window.innerWidth-240) + 'px';
@@ -2115,32 +2216,248 @@ function buildReviewList() {
 }
 
 // =======================================================
+// WORD COVERAGE TRACKING (v1.8)
+// =======================================================
+function getCoverage() {
+  try { return JSON.parse(localStorage.getItem('moduleE_cov_' + currentUser) || '{}'); } catch(e) { return {}; }
+}
+function saveCoverage(d) {
+  try { localStorage.setItem('moduleE_cov_' + currentUser, JSON.stringify(d)); } catch(e) {}
+}
+function markWordSeen(word, correct) {
+  if (!currentUser || !word) return;
+  var cov = getCoverage();
+  if (!cov[word]) cov[word] = {seen:0,correct:0,wrong:0,starred:0};
+  cov[word].seen = 1;
+  if (correct) cov[word].correct++; else cov[word].wrong++;
+  saveCoverage(cov);
+}
+function toggleStar(word) {
+  if (!currentUser || !word) return;
+  var cov = getCoverage();
+  if (!cov[word]) cov[word] = {seen:0,correct:0,wrong:0,starred:0};
+  cov[word].starred = cov[word].starred ? 0 : 1;
+  saveCoverage(cov);
+  return cov[word].starred;
+}
+function getWordStatus(word) {
+  var d = getCoverage()[word];
+  if (!d || !d.seen) return 'unseen';
+  if (d.starred) return 'starred';
+  if (d.wrong > d.correct) return 'weak';
+  if (d.correct >= 2) return 'strong';
+  return 'seen';
+}
+function getCoverageStats(listId) {
+  var words = listId === 'ALL' ? getAllWords() : (VOCAB_LISTS[listId] ? VOCAB_LISTS[listId].words : getAllWords());
+  var cov = getCoverage();
+  var r = {total:words.length, seen:0, strong:0, weak:0, starred:0};
+  words.forEach(function(w) {
+    var d = cov[w.w];
+    if (!d || !d.seen) return;
+    r.seen++;
+    if (d.starred) r.starred++;
+    if (d.wrong > d.correct) r.weak++;
+    else if (d.correct >= 2) r.strong++;
+  });
+  r.unseen = r.total - r.seen;
+  return r;
+}
+
+// =======================================================
+// SMART QUIZ MODES (v1.8)
+// =======================================================
+var lastQuizMode = 'random';
+
+function getSmartPool(mode, listId) {
+  var all = listId === 'ALL' ? getAllWords() : (VOCAB_LISTS[listId] ? VOCAB_LISTS[listId].words : getAllWords());
+  var cov = getCoverage();
+  var unseen = all.filter(function(w) { return !cov[w.w] || !cov[w.w].seen; });
+  var weak = all.filter(function(w) { return cov[w.w] && cov[w.w].seen && cov[w.w].wrong > 0; });
+  var starred = all.filter(function(w) { return cov[w.w] && cov[w.w].starred; });
+  if (mode === 'new') return unseen.length >= 3 ? unseen : unseen.concat(weak);
+  if (mode === 'weak') return weak;
+  if (mode === 'starred') return starred;
+  if (mode === 'smart') {
+    var pool = shuffle(unseen).slice(0,4).concat(shuffle(weak).slice(0,2));
+    if (pool.length < 6) pool = pool.concat(shuffle(all).slice(0, 6-pool.length));
+    return pool;
+  }
+  return all;
+}
+
+function startSmartQuiz(mode, listId) {
+  lastVocabList = listId || 'ALL';
+  lastQuizMode = mode;
+  var pool = getSmartPool(mode, lastVocabList);
+  if (pool.length === 0) {
+    var msgs = {new:'No new words left - try Smart Mix!', weak:'No weak words yet - keep practising!',
+                starred:'No starred words - star words in the Word Map first.'};
+    alert(msgs[mode] || 'No words found.');
+    return;
+  }
+  var allPool = getAllWords();
+  vQuestions = shuffle(pool).slice(0,6).map(function(item) {
+    var dist = shuffle(allPool.filter(function(x){return x.m!==item.m;})).slice(0,3).map(function(x){return x.m;});
+    return {word:item.w, pos:item.pos||'', fam:item.fam||'', correct:item.m,
+            opts:shuffle([item.m].concat(dist)), heb:item.h||'', ex:item.ex||'', translit:item.t||''};
+  });
+  retryQuestions = vQuestions.slice();
+  vIdx = 0; vScore = 0; quizHistory = [];
+  $('vocab-menu').classList.add('hidden');
+  $('vocab-done').classList.add('hidden');
+  $('vocab-quiz').classList.remove('hidden');
+  renderVocab();
+}
+
+// =======================================================
+// WORD MAP (v1.8)
+// =======================================================
+var currentMapList = 'A';
+
+function initWordMap() {
+  var btnsEl = $('map-list-btns');
+  if (btnsEl) {
+    var lists = Object.values(VOCAB_LISTS);
+    var html = lists.map(function(l) {
+      var cls = l.id===currentMapList?' active':'';
+      return '<button class="map-list-btn btn'+cls+'" id="map-btn-'+l.id+'" onclick="switchMapList(\''+l.id+'\')">'+l.label+'</button>';
+    }).join('');
+    if (lists.length > 1) {
+      var ac = currentMapList==='ALL'?' active':'';
+      html += '<button class="map-list-btn btn'+ac+'" id="map-btn-ALL" onclick="switchMapList(\'ALL\')">All lists</button>';
+    }
+    btnsEl.innerHTML = html;
+  }
+  renderWordMap(currentMapList);
+}
+
+function switchMapList(listId) {
+  currentMapList = listId;
+  document.querySelectorAll('.map-list-btn').forEach(function(b){b.classList.remove('active');});
+  var btn = document.getElementById('map-btn-'+listId);
+  if (btn) btn.classList.add('active');
+  var det = $('word-map-detail');
+  if (det) det.style.display = 'none';
+  renderWordMap(listId);
+}
+
+function renderWordMap(listId) {
+  var words = listId==='ALL' ? getAllWords() : (VOCAB_LISTS[listId]?VOCAB_LISTS[listId].words:getAllWords());
+  var cov = getCoverage();
+  var stats = getCoverageStats(listId);
+  var pct = stats.total>0 ? Math.round(stats.seen/stats.total*100) : 0;
+  var starred = words.filter(function(w){return cov[w.w]&&cov[w.w].starred;});
+
+  var statsEl = $('word-map-stats');
+  if (statsEl) {
+    statsEl.innerHTML =
+      '<div style="margin-bottom:10px">'+
+        '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink3);margin-bottom:4px">'+
+          '<span>Coverage</span><span>'+stats.seen+'/'+stats.total+' ('+pct+'%)</span>'+
+        '</div>'+
+        '<div style="height:6px;background:#eee;border-radius:3px;overflow:hidden">'+
+          '<div style="height:100%;width:'+pct+'%;background:var(--accent);border-radius:3px;transition:width .3s"></div>'+
+        '</div>'+
+      '</div>'+
+      '<div style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--ink3);margin-bottom:10px">'+
+        '<span>&#9744; '+stats.unseen+' unseen</span>'+
+        '<span style="color:#b08000">&#9744; '+(stats.seen-stats.strong-stats.weak)+' seen</span>'+
+        '<span style="color:var(--red)">&#9744; '+stats.weak+' weak</span>'+
+        '<span style="color:var(--green)">&#9744; '+stats.strong+' strong</span>'+
+        (stats.starred>0?'<span style="color:#f0a500">&#11088; '+stats.starred+' starred</span>':'')+
+      '</div>'+
+      (starred.length>0?
+        '<button class="btn btn-primary" style="width:100%;margin-bottom:10px" onclick="startSmartQuiz(\'starred\',\''+listId+'\')">&#11088; Quiz '+starred.length+' starred word'+(starred.length>1?'s':'')+'</button>':''
+      );
+  }
+
+  var mapEl = $('word-map-content');
+  if (!mapEl) return;
+  mapEl.innerHTML = words.map(function(w) {
+    var d = cov[w.w]||{seen:0,correct:0,wrong:0,starred:0};
+    var status = getWordStatus(w.w);
+    var bg = status==='strong'?'#e6f4ed':status==='weak'?'#fdecea':status==='seen'?'#fffbef':status==='starred'?'#fff8e1':'#f0eef8';
+    var border = status==='strong'?'var(--green)':status==='weak'?'var(--red)':status==='seen'?'#e6c84a':status==='starred'?'#f0a500':'#ccc';
+    var starC = d.starred?'#f0a500':'#ddd';
+    var wEsc = w.w.replace(/'/g,"\\'");
+    return '<div style="background:'+bg+';border:1.5px solid '+border+';border-radius:8px;padding:8px 10px;cursor:pointer;position:relative" onclick="showWordMapDetail(\''+wEsc+'\',\''+listId+'\')">'+
+      '<button onclick="event.stopPropagation();var s=toggleStar(\''+wEsc+'\');this.style.color=s?\'#f0a500\':\'#ddd\';renderWordMap(\''+listId+'\')" style="position:absolute;top:4px;right:4px;background:none;border:none;cursor:pointer;font-size:14px;color:'+starC+';padding:0">&#11088;</button>'+
+      '<div style="font-size:13px;font-weight:600;padding-right:20px;word-break:break-word">'+w.w+'</div>'+
+      (d.seen?'<div style="font-size:10px;color:#888;margin-top:2px">'+d.correct+' right / '+d.wrong+' wrong</div>':
+              '<div style="font-size:10px;color:#aaa;margin-top:2px">not seen yet</div>')+
+      '</div>';
+  }).join('');
+}
+
+function showWordMapDetail(word, listId) {
+  var entry = getAllWords().find(function(x){return x.w===word;});
+  if (!entry) return;
+  var cov = getCoverage();
+  var d = cov[word]||{seen:0,correct:0,wrong:0,starred:0};
+  var status = getWordStatus(word);
+  var det = $('word-map-detail');
+  if (!det) return;
+  var wEsc = word.replace(/'/g,"\\'");
+  det.innerHTML =
+    '<div style="background:var(--surface);border-radius:10px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
+    '<div style="font-size:20px;font-weight:700">'+entry.w+'<span style="font-size:12px;color:var(--ink3);margin-left:6px">'+(entry.pos||'')+'</span></div>'+
+    '<button onclick="var s=toggleStar(\''+wEsc+'\');this.style.color=s?\'#f0a500\':\'#ccc\';renderWordMap(\''+listId+'\')" style="background:none;border:none;cursor:pointer;font-size:22px;color:'+(d.starred?'#f0a500':'#ccc')+'">&#11088;</button>'+
+    '</div>'+
+    (entry.t?'<div style="font-size:16px;font-weight:700;color:#7a5200;direction:rtl;text-align:right;margin-bottom:4px">'+entry.t+'</div>':'')+
+    (entry.h?'<div style="font-size:14px;color:#5a3a00;direction:rtl;text-align:right;margin-bottom:8px">'+entry.h+'</div>':'')+
+    '<div style="font-size:13px;color:var(--ink2);margin-bottom:6px">'+(entry.m||'')+'</div>'+
+    (entry.ex?'<div style="font-size:12px;color:var(--ink3);font-style:italic;margin-bottom:8px">'+entry.ex+'</div>':'')+
+    '<div style="font-size:12px;color:var(--ink3)">Status: <strong>'+status+'</strong> &nbsp;| '+d.correct+' correct &nbsp;| '+d.wrong+' wrong</div>'+
+    '</div>';
+  det.style.display = 'block';
+}
+
+
+// =======================================================
 // DYNAMIC MENU RENDERERS -- auto-update when lists are added
 // =======================================================
 
 const LIST_ICONS = ['A','B','C','D','E','F'];
 
 function renderVocabMenu() {
-  const lists = Object.values(VOCAB_LISTS);
-  let html = '<p class="section-label">Pick a quiz</p><div class="home-grid">';
-  lists.forEach((l, i) => {
-    html += `<div class="mode-card" onclick="startVocab('${l.id}')">
-      <div class="icon">${LIST_ICONS[i]||'[list]'}</div>
-      <h3>${l.label}</h3><p>${l.words.length} words  x  ${l.module}</p>
-    </div>`;
+  var lists = Object.values(VOCAB_LISTS);
+  var html = '<p class="section-label">Smart quiz</p><div class="home-grid">';
+  html += '<div class="mode-card" onclick=\'startSmartQuiz(\"smart\",\"ALL\")\'>' +
+    '<div class="icon" style="font-size:18px;font-weight:700;color:var(--accent)">AI</div>' +
+    '<h3>Smart mix</h3><p>New + weak words</p></div>';
+  html += '<div class="mode-card" onclick=\'startSmartQuiz(\"new\",\"ALL\")\'>' +
+    '<div class="icon" style="font-size:18px;font-weight:700;color:var(--accent)">NEW</div>' +
+    '<h3>New words</h3><p>Not seen yet</p></div>';
+  html += '<div class="mode-card" onclick=\'startSmartQuiz(\"weak\",\"ALL\")\'>' +
+    '<div class="icon" style="font-size:18px;font-weight:700;color:var(--red)">WEAK</div>' +
+    '<h3>Weak words</h3><p>Words I got wrong</p></div>';
+  html += '<div class="mode-card" onclick=\'startSmartQuiz(\"starred\",\"ALL\")\'>' +
+    '<div style="font-size:20px">&#11088;</div>' +
+    '<h3>Starred words</h3><p>My study list</p></div>';
+  html += '</div><p class="section-label" style="margin-top:12px">Pick a list</p><div class="home-grid">';
+  lists.forEach(function(l, i) {
+    var stats = getCoverageStats(l.id);
+    var pct = stats.total > 0 ? Math.round(stats.seen/stats.total*100) : 0;
+    html += '<div class="mode-card" onclick="startVocab(\'' + l.id + '\')">' +
+      '<div class="icon">' + (LIST_ICONS[i]||'[list]') + '</div>' +
+      '<h3>' + l.label + '</h3><p>' + pct + '% covered</p>' +
+      '<div style="height:3px;background:#eee;border-radius:2px;margin-top:6px">' +
+      '<div style="height:100%;width:' + pct + '%;background:var(--accent);border-radius:2px"></div></div></div>';
   });
   if (lists.length > 1) {
-    html += `<div class="mode-card" onclick="startVocab('ALL')">
-      <div class="icon" style="font-size:20px;font-weight:700;color:var(--accent)">*</div><h3>All lists</h3><p>${getAllWords().length} words total</p>
-    </div>`;
+    var as2 = getCoverageStats('ALL');
+    var ap = as2.total > 0 ? Math.round(as2.seen/as2.total*100) : 0;
+    html += '<div class="mode-card" onclick=\'startVocab(\"ALL\")\'>' +
+      '<div class="icon">&#9733;</div><h3>All lists</h3><p>' + ap + '% covered</p>' +
+      '<div style="height:3px;background:#eee;border-radius:2px;margin-top:6px">' +
+      '<div style="height:100%;width:' + ap + '%;background:var(--accent);border-radius:2px"></div></div></div>';
   }
-  html += `<div class="mode-card" onclick="startWeakQuiz()">
-    <div class="icon" style="font-size:20px;font-weight:700;color:var(--accent)">+</div><h3>Weak words</h3><p>Words I missed</p>
-  </div></div>`;
-  const el = $('vocab-menu-inner');
+  html += '</div>';
+  var el = $('vocab-menu-inner');
   if (el) el.innerHTML = html;
 }
-
 function renderFlashMenu() {
   const lists = Object.values(VOCAB_LISTS);
   let html = '<p class="section-label">Choose a deck</p><div class="home-grid">';
@@ -2292,6 +2609,7 @@ function speak(word) {
   <div class="wp-translit" id="wp-translit"></div>
   <div class="wp-heb" id="wp-heb"></div>
   <div class="wp-en" id="wp-en"></div>
+  <a id="wp-translate-link" href="#" target="_blank" style="font-size:11px;color:#aaddff;margin-top:6px;display:block;text-decoration:none">&#127760; Google Translate</a>
 </div>
 
 <!-- ADMIN BUTTON -->
@@ -2390,7 +2708,7 @@ setTimeout(checkDailyReminder, 3000);
 // =======================================================
 
 // -- Change this password --
-const APP_VERSION = 'v1.6 - 2026-10-06';
+const APP_VERSION = 'v1.8 - 2026-10-06';
 const ADMIN_PASSWORD = 'Alon2024';
 
 let adminUnlocked = false;
